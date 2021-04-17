@@ -1,6 +1,6 @@
 import simpy
 import numpy
-
+TEMPO=0.1
 
 class Warehouse():
 
@@ -12,38 +12,44 @@ class Warehouse():
 
     #generowanie czasu
     def generatePeriod(self):
-        return numpy.random.exponential(1./5)
+        return numpy.random.exponential(4)   # losowa z rozkładu wykładniczego
 
-    def generateOrders(self):
+    def generateNumber(self):
         return numpy.random.randint(1,5)
 
 
-    def run(self):
+    def generateOrders(self):
         while True:
             period = self.generatePeriod()
             yield env.timeout(period)
-            demand = self.generateOrders()
+            newOrders = self.generateNumber()
 
-            if self.itemsStored > demand:
-                self.itemsStored -= demand
-                print(demand, " new orders!")
+            if self.itemsStored > newOrders:
+                self.itemsStored -= newOrders
+                print(newOrders, " nowe zamówienia!")
 
             else:
-                print(demand, " new orders! but not enough items in warehouse")
-                demand -= self.itemsStored
+                print(newOrders, " nowych zamówień ale brak towaru do realizacji wszystkich!")
+                newOrders -= self.itemsStored
                 self.itemsStored = 0
-                self.queue += demand
-                print(self.queue, " orders in queue\n")
+                self.queue += newOrders
+                print(self.queue, " zamówień w kolejce\n")
 
-
+    def generateSupply(self):
+        while True:
+            period = self.generatePeriod()
+            yield env.timeout(period)
+            newItems = self.generateNumber()
+            print(newItems," nowych towarów przybyło do magazynu")
+            self.itemsStored+=newItems
 
 
 
 
 
 numpy.random.seed(0)
-
-env = simpy.Environment()
+env = simpy.rt.RealtimeEnvironment(TEMPO)
 war=Warehouse(10)
-env.process(war.run())
-env.run(until=5.0)
+env.process(war.generateOrders())
+env.process(war.generateSupply())
+env.run(until=100)
