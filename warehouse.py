@@ -27,10 +27,10 @@ class Warehouse:
 
 numpy.random.seed(0)
 env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)
-war = Warehouse(5, env)
-war.hire_employees(5)
+war = Warehouse(10, env)
+war.hire_employees(10)
 delivery = delivery.Delivery(DELIVERY_TEMPO, war)
 orders = orders.Orders(ORDERS_TEMPO, war)
 env.process(delivery.run())
 env.process(orders.run())
-env.run(until=20)
+env.run(until=50)

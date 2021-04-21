@@ -25,27 +25,33 @@ class Delivery:
                 print("New delivery: ", new_items, " items")
 
                 while new_items > 0:
-                    for emp in self.warehouse.list_of_employees:
-                        if not emp.is_busy:
-                            print("Employee ", emp.employee_id, " is taking delivery")
-                            self.warehouse.envi.process(emp.take_delivery())
+                    i = 0
+                    while i < len(self.warehouse.list_of_employees):
+                        if not self.warehouse.list_of_employees[i].is_busy:
+                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is taking delivery")
+                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].take_delivery())
                             self.warehouse.items_stored += 1
                             new_items -= 1
                             break
+
+                        i += 1
 
             else:  # not enough space for all items in delivery
                 print(new_items, " items in new delivery, but there is not enough space")
 
                 free_space = self.warehouse.capacity - self.warehouse.items_stored
                 while free_space > 0:
-                    for emp in self.warehouse.list_of_employees:
-                        if not emp.is_busy:
-                            print("Employee ", emp.employee_id, " is taking delivery")
-                            self.warehouse.envi.process(emp.take_delivery())
+                    i = 0
+                    while i < len(self.warehouse.list_of_employees):
+                        if not self.warehouse.list_of_employees[i].is_busy:
+                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is taking delivery")
+                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].take_delivery())
                             self.warehouse.items_stored += 1
                             new_items -= 1
                             free_space -= 1
                             break
+
+                        i += 1
 
                 self.warehouse.delivery_queue += new_items
                 print(self.warehouse.delivery_queue, " items in delivery queue")

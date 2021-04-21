@@ -25,25 +25,31 @@ class Orders:
                 print(new_orders, " new orders")
 
                 while new_orders > 0:
-                    for emp in self.warehouse.list_of_employees:
-                        if not emp.is_busy:
-                            print("Employee ", emp.employee_id, " is sending order")
-                            self.warehouse.envi.process(emp.send_order())
+                    i = 0
+                    while i < len(self.warehouse.list_of_employees):
+                        if not self.warehouse.list_of_employees[i].is_busy:
+                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is sending order")
+                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].send_order())
                             self.warehouse.items_stored -= 1
                             new_orders -= 1
                             break
+
+                        i += 1
 
             else:  # not enough stored items
                 print(new_orders, " new orders, but there is not enough items stored")
 
                 while self.warehouse.items_stored > 0:
-                    for emp in self.warehouse.list_of_employees:
-                        if not emp.is_busy:
-                            print("Employee ", emp.employee_id, " is sending order")
-                            self.warehouse.envi.process(emp.send_order())
+                    i = 0
+                    while i < len(self.warehouse.list_of_employees):
+                        if not self.warehouse.list_of_employees[i].is_busy:
+                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is sending order")
+                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].send_order())
                             self.warehouse.items_stored -= 1
                             new_orders -= 1
                             break
+
+                        i += 1
 
                 self.warehouse.orders_queue += new_orders
                 print(self.warehouse.orders_queue, " orders in queue")
