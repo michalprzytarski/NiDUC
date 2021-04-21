@@ -8,7 +8,7 @@ class Orders:
         self.tempo = tempo
 
     def generate_wait_period(self):
-        return numpy.random.exponential(4)  # losowa z rozkładu wykładniczego
+        return numpy.random.exponential(4)
 
     def generate_order_number(self):
         return numpy.random.randint(1, 5)
@@ -16,32 +16,34 @@ class Orders:
     def run(self):
         while True:
             period = self.generate_wait_period()
-            yield self.warehouse.envi.timeout(1)
+            yield self.warehouse.envi.timeout(period)
             new_orders = self.generate_order_number()
-            new_orders += self.warehouse.orders_queue
-            self.warehouse.orders_queue = 0
+            # new_orders += self.warehouse.orders_queue
+            # self.warehouse.orders_queue = 0
 
-            if self.warehouse.items_stored >= new_orders:
-                print(self.warehouse.envi.now, " ", new_orders, " nowych zamówień")
-                for i in range(1, new_orders+1):
+            if self.warehouse.items_stored >= new_orders:  # enough items to send all orders
+                print(new_orders, " new orders")
+
+                while new_orders > 0:
                     for emp in self.warehouse.list_of_employees:
                         if not emp.is_busy:
-                            print(self.warehouse.envi.now, " Pracownik ", emp.employee_id, " wysyla zamowienie")
+                            print("Employee ", emp.employee_id, " is sending order")
                             self.warehouse.envi.process(emp.send_order())
+                            self.warehouse.items_stored -= 1
+                            new_orders -= 1
                             break
 
-                self.warehouse.items_stored -= new_orders
+            else:  # not enough stored items
+                print(new_orders, " new orders, but there is not enough items stored")
 
-            else:
-                print(self.warehouse.envi.now, " ", new_orders, " nowych zamówień, ale brak towaru do realizacji wszystkich!")
-                for i in range(1, self.warehouse.items_stored + 1):
+                while self.warehouse.items_stored > 0:
                     for emp in self.warehouse.list_of_employees:
                         if not emp.is_busy:
-                            print(self.warehouse.envi.now, " Pracownik ", emp.employee_id, " wysyla zamowienie")
+                            print("Employee ", emp.employee_id, " is sending order")
                             self.warehouse.envi.process(emp.send_order())
+                            self.warehouse.items_stored -= 1
+                            new_orders -= 1
                             break
 
-                new_orders -= self.warehouse.items_stored
-                self.warehouse.items_stored = 0
                 self.warehouse.orders_queue += new_orders
-                print(self.warehouse.envi.now, " ", self.warehouse.orders_queue, " zamówień w kolejce do wysylki\n")
+                print(self.warehouse.orders_queue, " orders in queue")

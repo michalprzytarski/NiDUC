@@ -16,35 +16,36 @@ class Delivery:
     def run(self):
         while True:
             period = self.generate_wait_period()
-            yield self.warehouse.envi.timeout(1)
+            yield self.warehouse.envi.timeout(period)
             new_items = self.generate_delivery_size()
-            new_items += self.warehouse.delivery_queue
-            self.warehouse.delivery_queue = 0
+            # new_items += self.warehouse.delivery_queue
+            # self.warehouse.delivery_queue = 0
 
-            if (self.warehouse.items_stored + new_items) <= self.warehouse.capacity:
-                print(self.warehouse.envi.now, " Nowa dostawa: ", new_items, "towarów")
-                for i in range(1, new_items + 1):
+            if (self.warehouse.items_stored + new_items) <= self.warehouse.capacity:  # enough space to take delivery
+                print("New delivery: ", new_items, " items")
+
+                while new_items > 0:
                     for emp in self.warehouse.list_of_employees:
                         if not emp.is_busy:
-                            # emp.take_delivery()
-                            print(self.warehouse.envi.now, " Pracownik ", emp.employee_id, " odbiera towar")
+                            print("Employee ", emp.employee_id, " is taking delivery")
                             self.warehouse.envi.process(emp.take_delivery())
+                            self.warehouse.items_stored += 1
+                            new_items -= 1
                             break
 
-                self.warehouse.items_stored += new_items
+            else:  # not enough space for all items in delivery
+                print(new_items, " items in new delivery, but there is not enough space")
 
-            else:
                 free_space = self.warehouse.capacity - self.warehouse.items_stored
-                print(self.warehouse.envi.now, " ", new_items, " towarow w nowej dostawie, ale brak miejsca na przyjecie wszystkich!")
-                for i in range(1, free_space + 1):
+                while free_space > 0:
                     for emp in self.warehouse.list_of_employees:
                         if not emp.is_busy:
-                            # emp.take_delivery()
-                            print(self.warehouse.envi.now, " Pracownik ", emp.employee_id, " odbiera towar")
+                            print("Employee ", emp.employee_id, " is taking delivery")
                             self.warehouse.envi.process(emp.take_delivery())
+                            self.warehouse.items_stored += 1
+                            new_items -= 1
+                            free_space -= 1
                             break
 
-                new_items -= free_space
-                self.warehouse.items_stored = self.warehouse.capacity
                 self.warehouse.delivery_queue += new_items
-                print(self.warehouse.envi.now, " ", self.warehouse.delivery_queue, " zamówień w kolejce do odbioru\n")
+                print(self.warehouse.delivery_queue, " items in delivery queue")
