@@ -14,18 +14,16 @@ class Employee:
         self.next_employee_id()
 
     def send_order(self):
-        while True:
-            self.is_busy = True
-            # print(self.warehouse.envi.now, " Pracownik ", self.employee_id, " wysyla zamowienie")
-            yield self.warehouse.envi.timeout(2)
-            self.is_busy = False
+        yield self.warehouse.envi.timeout(3)  # czas przeniesienia dostawy
+        yield self.warehouse.items_stored.get(1) #tymczasowo po 1 przedmiocie
+        yield self.warehouse.employees.put(self) #pracownik znowu jest wolny, wkładamy go do employees
+        print("Pracownik ", self.employee_id, "zrealizował zamówienie i jest wolny")
 
     def take_delivery(self):
-        while True:
-            self.is_busy = True
-            # print(self.warehouse.envi.now, " Pracownik ", self.employee_id, " odbiera towar")
-            yield self.warehouse.envi.timeout(2)
-            self.is_busy = False
+        yield self.warehouse.envi.timeout(3)  # czas przeniesienia dostawy
+        yield self.warehouse.items_stored.put(1) #tymczasowo po 1 przedmiocie
+        yield self.warehouse.employees.put(self)
+        print("Pracownik ", self.employee_id, "przeniosl dostawe i jest wolny")
 
     def next_employee_id(self):
         global EMPLOYEE_ID

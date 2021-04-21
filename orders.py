@@ -1,5 +1,5 @@
 import numpy
-
+import simpy
 
 class Orders:
 
@@ -7,41 +7,14 @@ class Orders:
         self.warehouse = warehouse
         self.tempo = tempo
 
-    def generate_wait_period(self):
-        return numpy.random.exponential(4)  # losowa z rozkładu wykładniczego
 
     def generate_order_number(self):
-        return numpy.random.randint(1, 5)
+        return numpy.random.randint(1, 4)
 
     def run(self):
-        while True:
-            period = self.generate_wait_period()
-            yield self.warehouse.envi.timeout(1)
             new_orders = self.generate_order_number()
-            new_orders += self.warehouse.orders_queue
-            self.warehouse.orders_queue = 0
-
-            if self.warehouse.items_stored >= new_orders:
-                print(self.warehouse.envi.now, " ", new_orders, " nowych zamówień")
-                for i in range(1, new_orders+1):
-                    for emp in self.warehouse.list_of_employees:
-                        if not emp.is_busy:
-                            print(self.warehouse.envi.now, " Pracownik ", emp.employee_id, " wysyla zamowienie")
-                            self.warehouse.envi.process(emp.send_order())
-                            break
-
-                self.warehouse.items_stored -= new_orders
-
-            else:
-                print(self.warehouse.envi.now, " ", new_orders, " nowych zamówień, ale brak towaru do realizacji wszystkich!")
-                for i in range(1, self.warehouse.items_stored + 1):
-                    for emp in self.warehouse.list_of_employees:
-                        if not emp.is_busy:
-                            print(self.warehouse.envi.now, " Pracownik ", emp.employee_id, " wysyla zamowienie")
-                            self.warehouse.envi.process(emp.send_order())
-                            break
-
-                new_orders -= self.warehouse.items_stored
-                self.warehouse.items_stored = 0
-                self.warehouse.orders_queue += new_orders
-                print(self.warehouse.envi.now, " ", self.warehouse.orders_queue, " zamówień w kolejce do wysylki\n")
+            print(new_orders, " nowych zamówień! Potrzebny pracownik do ich realizacji")
+            for i in range(new_orders):
+                employee = yield self.warehouse.employees.get()
+                print("Znaleziono wolnego pracownika (", employee.employee_id, ")do realizacji zamówienia!")
+                self.warehouse.envi.process(employee.send_order())
