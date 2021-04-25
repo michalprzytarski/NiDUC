@@ -17,7 +17,8 @@ class Warehouse:
         self.items_stored = simpy.Container(environ, init=START_ITEMS, capacity=capacity)
         self.envi = environ
         self.employees = simpy.Store(self.envi, capacity=1000)
-
+        self.orders_sent=0
+        self.items_received=0
 
     def generate_wait_period(self):
         return numpy.random.exponential(15)  # losowa z rozkładu wykładniczego
