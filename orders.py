@@ -13,7 +13,7 @@ class Orders:
 
     def run(self):
             new_orders = self.generate_order_number()
-            print(new_orders, " nowych zamówień! Potrzebny pracownik do ich realizacji")
+            print(new_orders, " nowych zamówień!(",self.warehouse.items_stored.level, " przedmiotów w magazynie) Potrzebny pracownik do ich realizacji")
             for i in range(new_orders):
                 employee = yield self.warehouse.employees.get()
                 print("Znaleziono wolnego pracownika (", employee.employee_id, ")do realizacji zamówienia!")
