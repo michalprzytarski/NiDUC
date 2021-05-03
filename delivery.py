@@ -1,23 +1,20 @@
 import numpy
 
 
+class Delivery:
 
-class Delivery():
+    def __init__(self, tempo, warehouse):
+        self.warehouse = warehouse
+        self.tempo = tempo
 
-    def __init__(self,tempo,warehouse):
-        self.warehouse=warehouse
-        self.tempo=tempo
-
-    def generateWaitPeriod(self):
-        return numpy.random.exponential(4)  # losowa z rozkładu wykładniczego
-
-    def generateDeliverySize(self):
-        return numpy.random.randint(1, 5)
+    # generowanie losowego rozmiaru dostawy
+    def generate_delivery_size(self):
+        return numpy.random.randint(1, 5)                               # losowanie liczby całkowitej z zadanego przedziału
 
     def run(self):
-        while True:
-            period = self.generateWaitPeriod()
-            yield self.warehouse.env.timeout(period)
-            newItems = self.generateDeliverySize()
-            print(newItems," nowych towarów przybyło do magazynu")
-            self.warehouse.itemsStored+=newItems
+            new_items = self.generate_delivery_size()                   # genrowanie rozmiaru dostawy
+            print(new_items, " nowych przedmiotów z dostawy!(",self.warehouse.capacity-self.warehouse.items_stored.level, " wolnycyh miejsc) Potrzebny pracownik do ich przeniesienia")
+            for i in range(new_items):                                  # dla każdego towaru z dostawy szukamy pracownika który może go przenieść
+                employee = yield self.warehouse.employees.get()         # bierzemy pracownika z puli pracowników (jeżeli jakiś tam jest, jeżeli nie czekamy)
+                print("Pracownik ", employee.employee_id, "przenosi 1 przedmiot z dostawy")
+                self.warehouse.envi.process(employee.take_delivery())   # rozpoczynamy proces odbioru towaru przez pracownika

@@ -1,33 +1,20 @@
-
 import numpy
+import simpy
 
+class Orders:
 
+    def __init__(self, tempo, warehouse):
+        self.warehouse = warehouse
+        self.tempo = tempo
 
-class Orders():
-
-    def __init__(self,tempo,warehouse):
-        self.warehouse=warehouse
-        self.tempo=tempo
-
-    def generateWaitPeriod(self):
-        return numpy.random.exponential(4)  # losowa z rozkładu wykładniczego
-
-    def generateOrderNumber(self):
-        return numpy.random.randint(1, 5)
+    # generowanie losowej liczby całkowitej dla ilości zamówień
+    def generate_order_number(self):
+        return numpy.random.randint(1, 4)                               # losujemy liczbe całkowitą z zadanego przedziału
 
     def run(self):
-        while True:
-            period = self.generateWaitPeriod()
-            yield self.warehouse.env.timeout(period)
-            newOrders = self.generateOrderNumber()
-
-            if self.warehouse.itemsStored > newOrders:
-                self.warehouse.itemsStored -= newOrders
-                print(newOrders, " nowe zamówienia!")
-
-            else:
-                print(newOrders, " nowych zamówień ale brak towaru do realizacji wszystkich!")
-                newOrders -= self.warehouse.itemsStored
-                self.warehouse.itemsStored=0
-                self.warehouse.queue += newOrders
-                print(self.warehouse.queue, " zamówień w kolejce\n")
+            new_orders = self.generate_order_number()                   # generujemy liczbe zamówień
+            print(new_orders, " nowych zamówień!(",self.warehouse.items_stored.level, " przedmiotów w magazynie) Potrzebny pracownik do ich realizacji")
+            for i in range(new_orders):                                 # dla każdego zamówienia szukamy pracownika do jego realizacji
+                employee = yield self.warehouse.employees.get()         # pobieramy pracownika z póli pracowników (jezeli jakiś jest, jeżeli nie czekamy)
+                print("Pracownik ", employee.employee_id, "realizuje 1 zamówienie!")
+                self.warehouse.envi.process(employee.send_order())      # startujemy proces ralizacji zamówienia przez pracownika
