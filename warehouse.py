@@ -16,11 +16,11 @@ class Warehouse:
 
     def __init__(self, capacity, environ):
         self.capacity = capacity                                # pojemność magazynu
-        self.items_stored = simpy.Container(environ, init=START_ITEMS, capacity=capacity) # pojemnik na składowane towary
+        self.items_stored = simpy.Container(environ, init=START_ITEMS, capacity=self.capacity) # pojemnik na składowane towary
         self.envi = environ                                     # środowisko
         self.employees = simpy.Store(self.envi, capacity=1000)  # "przechowywalnia" na pracowników (przechowuje obiekty)
-        self.orders_sent=0                                      # liczba wysłanych zamównień
-        self.items_received=0                                   # liczba towarów otrzymanych z dostawy
+        self.orders_sent = 0                                    # liczba wysłanych zamównień
+        self.items_received = 0                                 # liczba towarów otrzymanych z dostawy
         self.break_time = self.envi.event()                     # wydarzenie przerwy TODO: przenieść do osobnego obiektu
 
     #losowanie czasu oczekiwania
@@ -64,7 +64,7 @@ class Warehouse:
 
 numpy.random.seed(0)
 env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)            # stworzenie środkiska symulacji
-war = Warehouse(5, env)                                         # stworzenie obiektu magazynu
+war = Warehouse(100, env)                                         # stworzenie obiektu magazynu
 war.hire_employees(3)                                           # dodanie pracowników
 delivery = delivery.Delivery(DELIVERY_TEMPO, war)               # stworzenie obiektu dostaw
 orders = orders.Orders(ORDERS_TEMPO, war)                       # stworzenie obiektu zamówień
