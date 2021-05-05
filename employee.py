@@ -16,11 +16,15 @@ class Employee:
         self.next_employee_id()                     # inkrementacja id dla następnego pracownika
         self.delivery = delivery                    # obiekt dostaw
         self.orders = orders                        # obiekt zamówień
+        self.idle_time = 0                          # ilość czasu w którym pracownik nie wykonywał pracy
+        self.tasks_completed = 0                    # wykonane zadania
 
 
     def run(self):
         while True:
+            idle_time_start = self.warehouse.envi.now                   # rozpoczęcie pomiaru czasu bezczynności
             yield self.warehouse.tasks.get(1)
+            self.idle_time += self.warehouse.envi.now - idle_time_start # koniec pomiaru czasu bezczynności
             if self.orders.priority > self.delivery.priority or (self.orders.orders_queue.level > 0 and self.warehouse.items_stored.level > 0 and self.delivery.delivery_items_queue.level < 1):
                 yield self.orders.orders_queue.get(1)
                 yield self.warehouse.envi.process(self.send_order())
@@ -41,16 +45,18 @@ class Employee:
         yield self.warehouse.employees.put(self)                                            # pracownik znowu jest wolny, odkładamy go do employees
         self.warehouse.orders_sent += 1
         self.tiredness += 1
+        self.tasks_completed += 1
         print("Pracownik ", self.employee_id, "zrealizował zamówienie i jest wolny (zmęczenie:",self.tiredness, ")")
 
     # odebranie towaru
     def take_delivery(self):
-        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy")
+        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy ")
         yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas przeniesienia dostawy
         yield self.warehouse.items_stored.put(1)                                            # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
         yield self.warehouse.employees.put(self)                                            # pracownik znowu jest wolny, odkładamy go do employees
         self.warehouse.items_received += 1
         self.tiredness += 1
+        self.tasks_completed +=1
         print("Pracownik ", self.employee_id, "przeniosl dostawe i jest wolny (zmęczenie:",self.tiredness, ")")
 
     # inkrementacja id
