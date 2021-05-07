@@ -27,4 +27,3 @@ class Delivery:
             #    print("Pracownik ", employee.employee_id, "przenosi 1 przedmiot z dostawy")
             #    self.warehouse.envi.process(employee.take_delivery())   # rozpoczynamy proces odbioru towaru przez pracownika
 
-
