@@ -1,5 +1,7 @@
 import simpy
 import numpy
+
+import break_time
 import delivery
 import orders
 import employee
@@ -8,8 +10,8 @@ SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
 ORDERS_TEMPO = 1                # tempo zamówień
 START_ITEMS = 0                 # liczba początkowych towarów
-BREAK_TIME = 20                 # czas po jakim nastąpi przerwa
-BREAK_DURATION = 5              # czas trwania przerwy TODO: Przenieść do osobnego obiektu
+
+
 
 
 class Warehouse:
@@ -19,11 +21,11 @@ class Warehouse:
         self.items_stored = simpy.Container(environ, init=START_ITEMS,
                                             capacity=self.capacity)     # pojemnik na składowane towary
         self.envi = environ                                             # środowisko
-        self.employees = simpy.Store(self.envi, capacity=1000)          # "przechowywalnia" na pracowników (przechowuje obiekty)
+        self.employees = []                                             # pracownicy
         self.orders_sent = 0                                            # liczba wysłanych zamównień
         self.items_received = 0                                         # liczba towarów otrzymanych z dostawy
-        self.break_time = self.envi.event()                             # wydarzenie przerwy TODO: przenieść do osobnego obiektu
         self.tasks = simpy.Container(environ)
+        self.breaks = 0                                                 # obiekt odpowiedzialny za przerwy
 
     # losowanie czasu oczekiwania
     def generate_wait_period(self):
@@ -34,9 +36,8 @@ class Warehouse:
         for i in range(0, num_of_employees):
             yield self.envi.timeout(0.1)
             emp = employee.Employee(self, delivery, orders)             # stworzenie obiektu pracownika
-            self.employees.put(emp)                                     # dodatnie utworzonego pracownika do wszystkich pracowników
+            self.employees.append(emp)
             print("Hired employee ", emp.employee_id)
-            self.envi.process(emp.run())
 
     # generowanie dostaw
     def generate_deliveries(self, delivery):
@@ -55,13 +56,13 @@ class Warehouse:
             orders.run()                                                # wystartowanie procesu zamówień
 
     # generowanie przerw
-    def generate_breaks(self, breakTime):
-        while True:
-            yield self.envi.timeout(BREAK_TIME)
+    def generate_breaks(self, break_times, break_duration):
+        yield self.envi.timeout(0)
+        breaks = break_time.Break_time(break_times, break_duration, self)
+        self.breaks = breaks
+        self.envi.process(breaks.run())
 
-    # przerwa TODO: Przenieść do osobnego obiektu
-    def breakTime(self):
-        self.envi.timeout(BREAK_DURATION)
+
 
 
 numpy.random.seed(0)
@@ -72,9 +73,10 @@ orders = orders.Orders(ORDERS_TEMPO, war)                               # stworz
 
 # deliveries=env.process(delivery.run())
 
-
+env.process(war.generate_breaks([20, 40], 15))                          # rozpoczecie procesu generowania przerw
 env.process(war.generate_deliveries(delivery))                          # rozpoczęcie procesu generowania dostaw
 env.process(war.generate_orders(orders))                                # rozpoczęcie procesu generowania zamówień
 env.process(war.hire_employees(3, orders, delivery))                    # dodanie pracowników
+
 
 env.run(until=200)                                                      # rozpoczęcie symulacji do zadanego czasu
