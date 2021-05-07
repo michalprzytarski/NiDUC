@@ -1,6 +1,5 @@
 import simpy
 import numpy
-
 import break_time
 import delivery
 import orders
@@ -10,8 +9,6 @@ SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
 ORDERS_TEMPO = 1                # tempo zamówień
 START_ITEMS = 0                 # liczba początkowych towarów
-
-
 
 
 class Warehouse:
@@ -61,6 +58,7 @@ class Warehouse:
         breaks = break_time.Break_time(break_times, break_duration, self)
         self.breaks = breaks
         self.envi.process(breaks.run())
+
 
 
 
