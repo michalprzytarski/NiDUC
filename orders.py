@@ -1,4 +1,7 @@
 import numpy
+import simpy
+
+ORDERS_PRIORITY = 0             # priorytet zamówień
 
 
 class Orders:
@@ -6,50 +9,22 @@ class Orders:
     def __init__(self, tempo, warehouse):
         self.warehouse = warehouse
         self.tempo = tempo
+        self.orders_queue = simpy.Container(warehouse.envi)             # zamówienia oczekujące na realizację
+        self.priority = ORDERS_PRIORITY
 
-    def generate_wait_period(self):
-        return numpy.random.exponential(4)
-
+    # generowanie losowej liczby całkowitej dla ilości zamówień
     def generate_order_number(self):
-        return numpy.random.randint(1, 5)
+        return numpy.random.randint(1, 4)                               # losujemy liczbe całkowitą z zadanego przedziału
 
     def run(self):
-        while True:
-            period = self.generate_wait_period()
-            yield self.warehouse.envi.timeout(period)
-            new_orders = self.generate_order_number()
-            # new_orders += self.warehouse.orders_queue
-            # self.warehouse.orders_queue = 0
+            new_orders = self.generate_order_number()                   # generujemy liczbe zamówień
+            print(new_orders, " nowych zamówień!(",self.orders_queue.level+new_orders, " oczekujacych zamówień) Potrzebny pracownik/cy do ich realizacji")
+            for i in range(new_orders):
+                self.orders_queue.put(1)
+                self.warehouse.tasks.put(1)
 
-            if self.warehouse.items_stored >= new_orders:  # enough items to send all orders
-                print(new_orders, " new orders")
+            #for i in range(new_orders):                                 # dla każdego zamówienia szukamy pracownika do jego realizacji
+             #   employee = yield self.warehouse.employees.get()         # pobieramy pracownika z póli pracowników (jezeli jakiś jest, jeżeli nie czekamy)
+              #  print("Pracownik ", employee.employee_id, "realizuje 1 zamówienie!")
+               # self.warehouse.envi.process(employee.send_order())      # startujemy proces ralizacji zamówienia przez pracownika
 
-                while new_orders > 0:
-                    i = 0
-                    while i < len(self.warehouse.list_of_employees):
-                        if not self.warehouse.list_of_employees[i].is_busy:
-                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is sending order")
-                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].send_order())
-                            self.warehouse.items_stored -= 1
-                            new_orders -= 1
-                            break
-
-                        i += 1
-
-            else:  # not enough stored items
-                print(new_orders, " new orders, but there is not enough items stored")
-
-                while self.warehouse.items_stored > 0:
-                    i = 0
-                    while i < len(self.warehouse.list_of_employees):
-                        if not self.warehouse.list_of_employees[i].is_busy:
-                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is sending order")
-                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].send_order())
-                            self.warehouse.items_stored -= 1
-                            new_orders -= 1
-                            break
-
-                        i += 1
-
-                self.warehouse.orders_queue += new_orders
-                print(self.warehouse.orders_queue, " orders in queue")

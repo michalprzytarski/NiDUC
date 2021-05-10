@@ -1,4 +1,7 @@
 import numpy
+import simpy
+
+DELIVERY_PRIORITY = 1           # priorytet dostaw
 
 
 class Delivery:
@@ -6,52 +9,23 @@ class Delivery:
     def __init__(self, tempo, warehouse):
         self.warehouse = warehouse
         self.tempo = tempo
+        self.delivery_items_queue = simpy.Container(warehouse.envi)     # przedmiotwy z dostawy oczekujące na odbiór
+        self.priority = DELIVERY_PRIORITY
 
-    def generate_wait_period(self):
-        return numpy.random.exponential(4)  # losowa z rozkładu wykładniczego
-
+    # generowanie losowego rozmiaru dostawy
     def generate_delivery_size(self):
-        return numpy.random.randint(1, 5)
+        return numpy.random.randint(1, 5)                               # losowanie liczby całkowitej z zadanego przedziału
 
     def run(self):
-        while True:
-            period = self.generate_wait_period()
-            yield self.warehouse.envi.timeout(period)
-            new_items = self.generate_delivery_size()
-            # new_items += self.warehouse.delivery_queue
-            # self.warehouse.delivery_queue = 0
+            new_items = self.generate_delivery_size()                   # genrowanie rozmiaru dostawy
+            print(new_items, " nowych przedmiotów z dostawy!(", self.warehouse.capacity-self.warehouse.items_stored.level, " wolnycyh miejsc, ",self.delivery_items_queue.level + new_items, " przedmiotów do przeniesienia) Potrzebny pracownik do ich przeniesienia")
+            for i in range(new_items):
+                self.delivery_items_queue.put(1)
+                self.warehouse.tasks.put(1)
 
-            if (self.warehouse.items_stored + new_items) <= self.warehouse.capacity:  # enough space to take delivery
-                print("New delivery: ", new_items, " items")
 
-                while new_items > 0:
-                    i = 0
-                    while i < len(self.warehouse.list_of_employees):
-                        if not self.warehouse.list_of_employees[i].is_busy:
-                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is taking delivery")
-                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].take_delivery())
-                            self.warehouse.items_stored += 1
-                            new_items -= 1
-                            break
+            #for i in range(new_items):                                  # dla każdego towaru z dostawy szukamy pracownika który może go przenieść
+            #    employee = yield self.warehouse.employees.get()         # bierzemy pracownika z puli pracowników (jeżeli jakiś tam jest, jeżeli nie czekamy)
+            #    print("Pracownik ", employee.employee_id, "przenosi 1 przedmiot z dostawy")
+            #    self.warehouse.envi.process(employee.take_delivery())   # rozpoczynamy proces odbioru towaru przez pracownika
 
-                        i += 1
-
-            else:  # not enough space for all items in delivery
-                print(new_items, " items in new delivery, but there is not enough space")
-
-                free_space = self.warehouse.capacity - self.warehouse.items_stored
-                while free_space > 0:
-                    i = 0
-                    while i < len(self.warehouse.list_of_employees):
-                        if not self.warehouse.list_of_employees[i].is_busy:
-                            print("Employee ", self.warehouse.list_of_employees[i].employee_id, " is taking delivery")
-                            self.warehouse.envi.process(self.warehouse.list_of_employees[i].take_delivery())
-                            self.warehouse.items_stored += 1
-                            new_items -= 1
-                            free_space -= 1
-                            break
-
-                        i += 1
-
-                self.warehouse.delivery_queue += new_items
-                print(self.warehouse.delivery_queue, " items in delivery queue")

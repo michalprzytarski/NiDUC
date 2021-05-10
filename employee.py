@@ -1,30 +1,85 @@
+import random
+import simpy
 import numpy
 
-EMPLOYEE_ID = 1
+EMPLOYEE_ID = 1     # id dla pracownika
 
 
 class Employee:
 
-    def __init__(self, warehouse):
-        self.is_busy = False
-        # self.productivity = 8
-        self.productivity = numpy.random.exponential(4)
+    def __init__(self, warehouse, delivery, orders):
+        self.experience = random.randint(0, 9)      # doświadczenie pracownika, wpływa na produktywność
+        self.tiredness = 0                          # poziom zmęczenia pracownika
+        self.salary = 1000                          # wypłata pracownika
         self.warehouse = warehouse
-        self.employee_id = EMPLOYEE_ID
-        self.next_employee_id()
+        self.employee_id = EMPLOYEE_ID              # id pracownika
+        self.next_employee_id()                     # inkrementacja id dla następnego pracownika
+        self.delivery = delivery                    # obiekt dostaw
+        self.orders = orders                        # obiekt zamówień
+        self.idle_time = 0                          # ilość czasu w którym pracownik nie wykonywał pracy
+        self.tasks_completed = 0                    # wykonane zadania
+        self.current_action = self.warehouse.envi.process(self.run())                  # wykonywane aktualnie zadanie
+        self.waiting = False
 
+    def run(self):
+        while True:
+            if self.warehouse.breaks.is_it_breaktime:
+                yield self.warehouse.envi.process(self.go_on_break())
+            else:
+                self.waiting = True
+                try:
+                    idle_time_start = self.warehouse.envi.now  # rozpoczęcie pomiaru czasu bezczynności
+                    yield self.warehouse.tasks.get(1)  # czekanie na zadanie
+                    self.idle_time += self.warehouse.envi.now - idle_time_start  # koniec pomiaru czasu bezczynności
+                except simpy.Interrupt:
+                    yield self.warehouse.envi.process(self.go_on_break())
+                self.waiting = False
+
+                if self.orders.priority > self.delivery.priority or (self.orders.orders_queue.level > 0 and self.warehouse.items_stored.level > 0 and self.delivery.delivery_items_queue.level < 1):
+                    yield self.orders.orders_queue.get(1)
+                    yield self.warehouse.envi.process(self.send_order())
+                else:
+                    self.delivery.delivery_items_queue.get(1)
+                    yield self.warehouse.envi.process(self.take_delivery())
+
+    # przerwa!
+    def go_on_break(self):
+        print("Pracownik ", self.employee_id, " idzie na przerwe")
+        yield self.warehouse.envi.timeout(self.warehouse.breaks.break_duration - (self.warehouse.envi.now - self.warehouse.breaks.last_break_time))  # przerwa
+        print("Pracownik ", self.employee_id, " wraca z przerwy")
+        self.tiredness -= self.warehouse.breaks.break_duration * 2
+        if self.tiredness < 0:
+            self.tiredness = 0
+
+    def interrupt(self):
+        self.current_action.interrupt()
+
+    # realizacja zamówienia
     def send_order(self):
-        while True:
-            self.is_busy = True
-            yield self.warehouse.envi.timeout(20/self.productivity)
-            self.is_busy = False
+        forklift = yield self.warehouse.forklifts.get()
+        print("Pracownik ", self.employee_id, " realizuje 1 zamówienie za pomocą wózka widłowego o nr", forklift.forklift_id)
+        yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas realizacji zamówienia i odczekujemy go
+        yield self.warehouse.items_stored.get(1)                                            # pobieramy przedmiot z magazynu (tymczasowo po 1 przedmiocie)
+        self.warehouse.orders_sent += 1
+        self.tiredness += 1
+        self.tasks_completed += 1
+        print("Pracownik ", self.employee_id, "zrealizował zamówienie i jest wolny (zmęczenie:",self.tiredness, ")")
+        yield self.warehouse.forklifts.put(forklift)
 
+    # odebranie towaru
     def take_delivery(self):
-        while True:
-            self.is_busy = True
-            yield self.warehouse.envi.timeout(20/self.productivity)
-            self.is_busy = False
+        forklift = yield self.warehouse.forklifts.get()
+        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy ")
+        yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas przeniesienia dostawy
+        yield self.warehouse.items_stored.put(1)                                            # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
+        self.warehouse.items_received += 1
+        self.tiredness += 1
+        self.tasks_completed +=1
+        print("Pracownik ", self.employee_id, "przeniosl dostawe i jest wolny (zmęczenie:",self.tiredness, ")")
+        yield self.warehouse.forklifts.put(forklift)
 
+    # inkrementacja id
     def next_employee_id(self):
         global EMPLOYEE_ID
         EMPLOYEE_ID += 1
+
