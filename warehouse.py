@@ -65,7 +65,7 @@ class Warehouse:
     # generowanie przerw
     def generate_breaks(self, break_times, break_duration):
         yield self.envi.timeout(0)
-        breaks = break_time.Break_time(break_times, break_duration, self)
+        breaks = break_time.BreakTime(break_times, break_duration, self)
         self.breaks = breaks
         self.envi.process(breaks.run())
 
@@ -77,7 +77,7 @@ delivery = delivery.Delivery(DELIVERY_TEMPO, war)                       # stworz
 orders = orders.Orders(ORDERS_TEMPO, war)                               # stworzenie obiektu zamówień
 
 # deliveries=env.process(delivery.run())
-war.buy_forklifts(2)
+env.process(war.buy_forklifts(2))
 env.process(war.generate_breaks([20, 40], 15))                          # rozpoczecie procesu generowania przerw
 env.process(war.generate_deliveries(delivery))                          # rozpoczęcie procesu generowania dostaw
 env.process(war.generate_orders(orders))                                # rozpoczęcie procesu generowania zamówień

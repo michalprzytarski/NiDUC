@@ -69,12 +69,12 @@ class Employee:
     # odebranie towaru
     def take_delivery(self):
         forklift = yield self.warehouse.forklifts.get()
-        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy ")
+        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy za pomoca wózka widłowego o nr", forklift.forklift_id)
         yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas przeniesienia dostawy
         yield self.warehouse.items_stored.put(1)                                            # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
         self.warehouse.items_received += 1
         self.tiredness += 1
-        self.tasks_completed +=1
+        self.tasks_completed += 1
         print("Pracownik ", self.employee_id, "przeniosl dostawe i jest wolny (zmęczenie:",self.tiredness, ")")
         yield self.warehouse.forklifts.put(forklift)
 
