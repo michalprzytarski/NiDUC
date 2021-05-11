@@ -39,18 +39,21 @@ class Employee:
 
                 if self.orders.priority > self.delivery.priority or (self.orders.orders_queue.level > 0 and self.warehouse.items_stored.level > 0 and self.delivery.delivery_items_queue.level < 1):
                     yield self.orders.orders_queue.get(1)
+                    self.warehouse.idle = False
                     yield self.warehouse.envi.process(self.send_order())
                 else:
                     self.delivery.delivery_items_queue.get(1)
+                    self.warehouse.idle = False
                     yield self.warehouse.envi.process(self.take_delivery())
-
+                    self.warehouse.empty = False
+            yield self.warehouse.envi.process(self.report_issues())
 
     # przerwa!
     def go_on_break(self):
         print("Pracownik ", self.employee_id, " idzie na przerwe")
         yield self.warehouse.envi.timeout(self.warehouse.breaks.break_duration - (self.warehouse.envi.now - self.warehouse.breaks.last_break_time))  # przerwa
         print("Pracownik ", self.employee_id, " wraca z przerwy")
-        self.tiredness -=self.warehouse.breaks.break_duration * 2
+        self.tiredness -= self.warehouse.breaks.break_duration * 2
         if self.tiredness < 0:
             self.tiredness = 0
 
@@ -76,6 +79,19 @@ class Employee:
         self.tiredness += 1
         self.tasks_completed +=1
         print("Pracownik ", self.employee_id, "przeniosl dostawe i jest wolny (zmęczenie:",self.tiredness, ")")
+
+    # zgłoszenie problemów/sytuacji wyjątkowych (jeżeli jakieś wystąpiły)
+    def report_issues(self):
+        yield self.warehouse.envi.timeout(0)
+        if self.warehouse.items_stored.level == 0 and self.warehouse.empty == False:
+            self.warehouse.issues.warhouse_is_empty()
+            self.warehouse.empty = True
+        if self.warehouse.tasks.level == 0 and self.warehouse.idle == False:
+            self.warehouse.issues.warhouse_is_idle()
+            self.warehouse.idle = True
+
+
+
 
     # inkrementacja id
     def next_employee_id(self):
