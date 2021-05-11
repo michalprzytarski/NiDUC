@@ -1,67 +1,45 @@
 #: kivy 2.0.0
 
 <SimulationScreen>:
+    size: root.size
+    Button:
+        text: 'test2'
 
-    FloatLayout:
-        size: root.width, root.height
+<MainPanel>:
+    size: root.width, root.height
 
-        GridLayout:
-            cols: 1
-            size_hint: 0.33, 1
 
-            Label:
-                text: 'PARAMETRY SYMULACJI'
-                text_size: self.width, None
+<ControlPanel>:
+    cols: 1
+    size_hint_x: 0.33
 
-            GridLayout:
-                cols: 2
+<NumberPanel>:
+    cols: 2
 
-                Label:
-                    text: 'Ilość pracowników: '
-                    text_size: self.width, None
+<NumberPanelTextInput>:
+    # background_color: 1, 0, 0, 1
 
-                TextInput:
-                    text: 'podaj ilość...'
+<NumberPanelLabel>:
+    text_size: self.width, None
 
-            GridLayout:
-                cols: 2
-                Label:
-                    text_size: self.width, None
-                    text: 'Ilość wózków widłowych: '
+<InfoPanel>:
+    orientation: 'vertical'
 
-                TextInput:
-                    text: "podaj ilość..."
+<EmployeeListScrollView>:
+    size_hint_y: 1
+    do_scroll_x: False
+    do_scroll_y: True
+    # size_hint_y: 0.9
 
-            GridLayout:
-                cols: 2
+<EmployeeListGrid>
+    cols: 3
 
-                Label:
-                    text: 'Powierzchnia magazynu: '
-                    text_size: self.width, None
+<EmployeeListLabel>:
+    size_hint_y: None
+    height: self.texture_size[1]
+    text_size: self.width, None
+    padding: 10, 10
 
-                TextInput:
-                    text: 'podaj powierzchnie...'
-
-            Button:
-                text: 'START'
-
-            Button:
-                text: 'STOP'
-
-            Button:
-                text: 'Generuj wykresy'
-
-        ScrollView:
-            pos: root.width*0.33, 0
-            size_hint: 0.67, 1
-            do_scroll_x: False
-            do_scroll_y: True
-
-            Label:
-                size_hint_y: None
-                height: self.texture_size[1]
-                text_size: self.width, None
-                padding: 10, 10
-                text:
-                    'really some amazing simulation log\n' * 100
-
+<WarehouseInfoPanel>:
+    cols: 2
+    size_hint_y: 0.2
