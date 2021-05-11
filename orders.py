@@ -27,3 +27,4 @@ class Orders:
              #   employee = yield self.warehouse.employees.get()         # pobieramy pracownika z póli pracowników (jezeli jakiś jest, jeżeli nie czekamy)
               #  print("Pracownik ", employee.employee_id, "realizuje 1 zamówienie!")
                # self.warehouse.envi.process(employee.send_order())      # startujemy proces ralizacji zamówienia przez pracownika
+

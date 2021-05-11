@@ -26,3 +26,4 @@ class Delivery:
             #    employee = yield self.warehouse.employees.get()         # bierzemy pracownika z puli pracowników (jeżeli jakiś tam jest, jeżeli nie czekamy)
             #    print("Pracownik ", employee.employee_id, "przenosi 1 przedmiot z dostawy")
             #    self.warehouse.envi.process(employee.take_delivery())   # rozpoczynamy proces odbioru towaru przez pracownika
+

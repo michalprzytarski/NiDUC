@@ -4,7 +4,6 @@ import numpy
 
 EMPLOYEE_ID = 1     # id dla pracownika
 
-
 class Employee:
 
     def __init__(self, warehouse, delivery, orders):
@@ -22,9 +21,9 @@ class Employee:
         self.waiting = False
 
 
+
     def run(self):
         while True:
-
             if self.warehouse.breaks.is_it_breaktime:
                 yield self.warehouse.envi.process(self.go_on_break())
             else:
@@ -60,6 +59,7 @@ class Employee:
     def interrupt(self):
         self.current_action.interrupt()
 
+
     # realizacja zamówienia
     def send_order(self):
         print("Pracownik ", self.employee_id, " realizuje 1 zamówienie")
@@ -72,6 +72,7 @@ class Employee:
 
     # odebranie towaru
     def take_delivery(self):
+
         print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy ")
         yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas przeniesienia dostawy
         yield self.warehouse.items_stored.put(1)                                            # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
@@ -97,3 +98,4 @@ class Employee:
     def next_employee_id(self):
         global EMPLOYEE_ID
         EMPLOYEE_ID += 1
+
