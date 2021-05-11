@@ -2,13 +2,14 @@ import simpy
 import numpy
 import break_time
 import delivery
+import issues
 import orders
 import employee
 
 SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
 ORDERS_TEMPO = 1                # tempo zamówień
-START_ITEMS = 0                 # liczba początkowych towarów
+START_ITEMS = 5                 # liczba początkowych towarów
 
 
 class Warehouse:
@@ -23,6 +24,9 @@ class Warehouse:
         self.items_received = 0                                         # liczba towarów otrzymanych z dostawy
         self.tasks = simpy.Container(environ)
         self.breaks = 0                                                 # obiekt odpowiedzialny za przerwy
+        self.idle = True                                                # brak pracy
+        self.empty = False                                              # czy magazyn jest pusty
+        self.issues = issues.Issues()                                   # zgloszone problemy
 
     # losowanie czasu oczekiwania
     def generate_wait_period(self):
@@ -71,7 +75,7 @@ orders = orders.Orders(ORDERS_TEMPO, war)                               # stworz
 
 # deliveries=env.process(delivery.run())
 
-env.process(war.generate_breaks([20, 40], 15))                          # rozpoczecie procesu generowania przerw
+env.process(war.generate_breaks([20, 60], 15))                          # rozpoczecie procesu generowania przerw
 env.process(war.generate_deliveries(delivery))                          # rozpoczęcie procesu generowania dostaw
 env.process(war.generate_orders(orders))                                # rozpoczęcie procesu generowania zamówień
 env.process(war.hire_employees(3, orders, delivery))                    # dodanie pracowników
