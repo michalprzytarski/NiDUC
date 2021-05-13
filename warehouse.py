@@ -5,6 +5,7 @@ import delivery
 import issues
 import orders
 import employee
+import forklift
 
 SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
@@ -23,6 +24,7 @@ class Warehouse:
         self.orders_sent = 0                                            # liczba wysłanych zamównień
         self.items_received = 0                                         # liczba towarów otrzymanych z dostawy
         self.tasks = simpy.Container(environ)
+        self.forklifts = simpy.Store(self.envi, capacity=1000)  # wózki widłowe
         self.breaks = 0                                                 # obiekt odpowiedzialny za przerwy
         self.idle = True                                                # brak pracy
         self.empty = False                                              # czy magazyn jest pusty
@@ -36,9 +38,18 @@ class Warehouse:
     def hire_employees(self, num_of_employees, orders, delivery):
         for i in range(0, num_of_employees):
             yield self.envi.timeout(0.1)
-            emp = employee.Employee(self, delivery, orders)             # stworzenie obiektu pracownika
+            capacity = numpy.random.randint(1, 3)
+            emp = employee.Employee(self, delivery, orders, capacity)   # stworzenie obiektu pracownika
             self.employees.append(emp)
-            print("Hired employee ", emp.employee_id)
+            print("Zatrudniono pracownika o id", emp.employee_id)
+
+        # dodawanie wózków widłowych
+    def buy_forklifts(self, num_of_forklifts):
+        for i in range(0, num_of_forklifts):
+            yield self.envi.timeout(0.1)
+            fork = forklift.Forklift(self, 3)                           # stworzenie obiektu wózka
+            self.forklifts.put(fork)
+            print("Kupiono wózek widłowy o nr", fork.forklift_id)
 
     # generowanie dostaw
     def generate_deliveries(self, delivery):
@@ -59,7 +70,7 @@ class Warehouse:
     # generowanie przerw
     def generate_breaks(self, break_times, break_duration):
         yield self.envi.timeout(0)
-        breaks = break_time.Break_time(break_times, break_duration, self)
+        breaks = break_time.BreakTime(break_times, break_duration, self)
         self.breaks = breaks
         self.envi.process(breaks.run())
 
@@ -72,8 +83,7 @@ env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)                    # stworz
 war = Warehouse(100, env)                                               # stworzenie obiektu magazynu
 delivery = delivery.Delivery(DELIVERY_TEMPO, war)                       # stworzenie obiektu dostaw
 orders = orders.Orders(ORDERS_TEMPO, war)                               # stworzenie obiektu zamówień
-
-# deliveries=env.process(delivery.run())
+# war.buy_forklifts(2)
 
 env.process(war.generate_breaks([20, 60], 15))                          # rozpoczecie procesu generowania przerw
 env.process(war.generate_deliveries(delivery))                          # rozpoczęcie procesu generowania dostaw
