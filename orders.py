@@ -18,13 +18,6 @@ class Orders:
 
     def run(self):
             new_orders = self.generate_order_number()                   # generujemy liczbe zamówień
-            print(new_orders, " nowych zamówień!(",self.orders_queue.level+new_orders, " oczekujacych zamówień) Potrzebny pracownik/cy do ich realizacji")
-            for i in range(new_orders):
-                self.orders_queue.put(1)
-                self.warehouse.tasks.put(1)
-
-            #for i in range(new_orders):                                 # dla każdego zamówienia szukamy pracownika do jego realizacji
-             #   employee = yield self.warehouse.employees.get()         # pobieramy pracownika z póli pracowników (jezeli jakiś jest, jeżeli nie czekamy)
-              #  print("Pracownik ", employee.employee_id, "realizuje 1 zamówienie!")
-               # self.warehouse.envi.process(employee.send_order())      # startujemy proces ralizacji zamówienia przez pracownika
-
+            print(new_orders, "nowych zamówień!(",self.orders_queue.level+new_orders, "oczekujacych zamówień). Potrzebny pracownik/cy do ich realizacji")
+            self.orders_queue.put(new_orders)
+            self.warehouse.tasks.put(new_orders)
