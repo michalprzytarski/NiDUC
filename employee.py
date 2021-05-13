@@ -4,7 +4,6 @@ import numpy
 
 EMPLOYEE_ID = 1     # id dla pracownika
 
-
 class Employee:
 
     def __init__(self, warehouse, delivery, orders):
@@ -20,6 +19,8 @@ class Employee:
         self.tasks_completed = 0                    # wykonane zadania
         self.current_action = self.warehouse.envi.process(self.run())                  # wykonywane aktualnie zadanie
         self.waiting = False
+
+
 
     def run(self):
         while True:
@@ -37,10 +38,14 @@ class Employee:
 
                 if self.orders.priority > self.delivery.priority or (self.orders.orders_queue.level > 0 and self.warehouse.items_stored.level > 0 and self.delivery.delivery_items_queue.level < 1):
                     yield self.orders.orders_queue.get(1)
+                    self.warehouse.idle = False
                     yield self.warehouse.envi.process(self.send_order())
                 else:
                     self.delivery.delivery_items_queue.get(1)
+                    self.warehouse.idle = False
                     yield self.warehouse.envi.process(self.take_delivery())
+                    self.warehouse.empty = False
+            yield self.warehouse.envi.process(self.report_issues())
 
     # przerwa!
     def go_on_break(self):
@@ -54,29 +59,40 @@ class Employee:
     def interrupt(self):
         self.current_action.interrupt()
 
+
     # realizacja zamówienia
     def send_order(self):
-        forklift = yield self.warehouse.forklifts.get()
-        print("Pracownik ", self.employee_id, " realizuje 1 zamówienie za pomocą wózka widłowego o nr", forklift.forklift_id)
+        print("Pracownik ", self.employee_id, " realizuje 1 zamówienie")
         yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas realizacji zamówienia i odczekujemy go
         yield self.warehouse.items_stored.get(1)                                            # pobieramy przedmiot z magazynu (tymczasowo po 1 przedmiocie)
         self.warehouse.orders_sent += 1
         self.tiredness += 1
         self.tasks_completed += 1
         print("Pracownik ", self.employee_id, "zrealizował zamówienie i jest wolny (zmęczenie:",self.tiredness, ")")
-        yield self.warehouse.forklifts.put(forklift)
 
     # odebranie towaru
     def take_delivery(self):
-        forklift = yield self.warehouse.forklifts.get()
-        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy za pomoca wózka widłowego o nr", forklift.forklift_id)
+
+        print("Pracownik ", self.employee_id, " przenosi 1 przedmiot z dostawy ")
         yield self.warehouse.envi.timeout(3+(0.3*self.tiredness)**2-0.2*self.experience)    # wyliczamy czas przeniesienia dostawy
         yield self.warehouse.items_stored.put(1)                                            # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
         self.warehouse.items_received += 1
         self.tiredness += 1
-        self.tasks_completed += 1
+        self.tasks_completed +=1
         print("Pracownik ", self.employee_id, "przeniosl dostawe i jest wolny (zmęczenie:",self.tiredness, ")")
-        yield self.warehouse.forklifts.put(forklift)
+
+    # zgłoszenie problemów/sytuacji wyjątkowych (jeżeli jakieś wystąpiły)
+    def report_issues(self):
+        yield self.warehouse.envi.timeout(0)
+        if self.warehouse.items_stored.level == 0 and self.warehouse.empty == False:
+            self.warehouse.issues.warhouse_is_empty()
+            self.warehouse.empty = True
+        if self.warehouse.tasks.level == 0 and self.warehouse.idle == False:
+            self.warehouse.issues.warhouse_is_idle()
+            self.warehouse.idle = True
+
+
+
 
     # inkrementacja id
     def next_employee_id(self):
