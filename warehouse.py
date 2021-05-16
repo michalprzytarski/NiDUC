@@ -75,20 +75,20 @@ class Warehouse:
         self.envi.process(breaks.run())
 
 
-
-
-
-numpy.random.seed(0)
-env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)                    # stworzenie środkiska symulacji
-war = Warehouse(100, env)                                               # stworzenie obiektu magazynu
-delivery = delivery.Delivery(DELIVERY_TEMPO, war)                       # stworzenie obiektu dostaw
-orders = orders.Orders(ORDERS_TEMPO, war)                               # stworzenie obiektu zamówień
-# war.buy_forklifts(2)
-
-env.process(war.generate_breaks([20, 60], 15))                          # rozpoczecie procesu generowania przerw
-env.process(war.generate_deliveries(delivery))                          # rozpoczęcie procesu generowania dostaw
-env.process(war.generate_orders(orders))                                # rozpoczęcie procesu generowania zamówień
-env.process(war.hire_employees(3, orders, delivery))                    # dodanie pracowników
-
-
-env.run(until=200)                                                      # rozpoczęcie symulacji do zadanego czasu
+#
+#
+#
+# numpy.random.seed(0)
+# env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)                    # stworzenie środkiska symulacji
+# war = Warehouse(100, env)                                               # stworzenie obiektu magazynu
+# delivery = delivery.Delivery(DELIVERY_TEMPO, war)                       # stworzenie obiektu dostaw
+# orders = orders.Orders(ORDERS_TEMPO, war)                               # stworzenie obiektu zamówień
+# # war.buy_forklifts(2)
+#
+# env.process(war.generate_breaks([20, 60], 15))                          # rozpoczecie procesu generowania przerw
+# env.process(war.generate_deliveries(delivery))                          # rozpoczęcie procesu generowania dostaw
+# env.process(war.generate_orders(orders))                                # rozpoczęcie procesu generowania zamówień
+# env.process(war.hire_employees(3, orders, delivery))                    # dodanie pracowników
+#
+#
+# env.run(until=200)                                                      # rozpoczęcie symulacji do zadanego czasu
