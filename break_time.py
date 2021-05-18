@@ -16,6 +16,7 @@ class BreakTime:
     def run(self):
         while self.iterator < len(self.break_times):
             yield self.warehouse.envi.timeout(self.break_times[self.iterator] - self.warehouse.envi.now)
+
             if not self.warehouse.crash.war_crashed:
                 self.is_it_breaktime = True
                 self.last_break_time = self.warehouse.envi.now
@@ -32,3 +33,4 @@ class BreakTime:
                 self.iterator += 1
             else :
                 self.iterator += 1
+

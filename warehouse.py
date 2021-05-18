@@ -8,6 +8,7 @@ import employee
 import forklift
 import crash
 
+
 SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
 ORDERS_TEMPO = 1                # tempo zamówień
@@ -82,6 +83,7 @@ class Warehouse:
         self.crash = cr
         self.envi.process(cr.run())
 
+
 #
 #
 #
@@ -99,3 +101,4 @@ class Warehouse:
 #
 #
 # env.run(until=200)
+
