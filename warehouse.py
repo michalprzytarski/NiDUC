@@ -6,32 +6,35 @@ import issues
 import orders
 import employee
 import forklift
+import crash
 
 SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
 ORDERS_TEMPO = 1                # tempo zamówień
+START_ITEMS = 5                 # liczba początkowych towarów
 
 
 class Warehouse:
 
-    def __init__(self, capacity, environ, start_items):
+    def __init__(self, capacity, environ):
         self.capacity = capacity                                        # pojemność magazynu
-        self.items_stored = simpy.Container(environ, init=start_items,
+        self.items_stored = simpy.Container(environ, init=START_ITEMS,
                                             capacity=self.capacity)     # pojemnik na składowane towary
         self.envi = environ                                             # środowisko
         self.employees = []                                             # pracownicy
         self.orders_sent = 0                                            # liczba wysłanych zamównień
         self.items_received = 0                                         # liczba towarów otrzymanych z dostawy
         self.tasks = simpy.Container(environ)
-        self.forklifts = simpy.Store(self.envi, capacity=1000)          # wózki widłowe
-        self.breaks = 0                                                 # obiekt odpowiedzialny za przerwy
+        self.forklifts = simpy.Store(self.envi, capacity=1000)  # wózki widłowe
+        self.breaks = None                                              # obiekt odpowiedzialny za przerwy
+        self.crash = None                                               # obiekt odpowiedzialny za awarie
         self.idle = True                                                # brak pracy
         self.empty = False                                              # czy magazyn jest pusty
         self.issues = issues.Issues()                                   # zgloszone problemy
 
     # losowanie czasu oczekiwania
-    def generate_wait_period(self, tempo):
-        return numpy.random.exponential(15)/tempo                             # losowa z rozkładu wykładniczego
+    def generate_wait_period(self):
+        return numpy.random.exponential(15)                             # losowa z rozkładu wykładniczego
 
     # dodawanie pracowików
     def hire_employees(self, num_of_employees, orders, delivery):
@@ -51,17 +54,17 @@ class Warehouse:
             print("Kupiono wózek widłowy o nr", fork.forklift_id)
 
     # generowanie dostaw
-    def generate_deliveries(self, delivery, tempo):
+    def generate_deliveries(self, delivery):
         while True:
-            period = self.generate_wait_period(tempo)                        # wylosowanej ilości czasu do odczekania
+            period = self.generate_wait_period()                        # wylosowanej ilości czasu do odczekania
             yield self.envi.timeout(period)                             # odczekanie wylosowanej ilości czasu
             print("Nowa dostawa!")
             delivery.run()                                              # wystartowanie procesu dostawy
 
     # generowanie zamówień
-    def generate_orders(self, orders, tempo):
+    def generate_orders(self, orders):
         while True:
-            period = self.generate_wait_period(tempo)                        # wylosowanie ilości czasu do odczekania
+            period = self.generate_wait_period()                        # wylosowanie ilości czasu do odczekania
             yield self.envi.timeout(period)                             # odczekanie wylosowanej ilości czasu
             print("Nowe zamówienia")
             orders.run()                                                # wystartowanie procesu zamówień
@@ -69,10 +72,15 @@ class Warehouse:
     # generowanie przerw
     def generate_breaks(self, break_times, break_duration):
         yield self.envi.timeout(0)
-        breaks = break_time.Break_time(break_times, break_duration, self)
+        breaks = break_time.BreakTime(break_times, break_duration, self)
         self.breaks = breaks
         self.envi.process(breaks.run())
 
+    def generate_crash(self, probability):
+        yield self.envi.timeout(0)
+        cr = crash.Crash(probability, self)
+        self.crash = cr
+        self.envi.process(cr.run())
 
 #
 #
@@ -90,4 +98,4 @@ class Warehouse:
 # env.process(war.hire_employees(3, orders, delivery))                    # dodanie pracowników
 #
 #
-# env.run(until=200)                                                      # rozpoczęcie symulacji do zadanego czasu
+# env.run(until=200)
