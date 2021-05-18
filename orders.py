@@ -6,8 +6,9 @@ ORDERS_PRIORITY = 0             # priorytet zamówień
 
 class Orders:
 
-    def __init__(self, warehouse):
+    def __init__(self, tempo, warehouse):
         self.warehouse = warehouse
+        self.tempo = tempo
         self.orders_queue = simpy.Container(warehouse.envi)             # zamówienia oczekujące na realizację
         self.priority = ORDERS_PRIORITY
 
