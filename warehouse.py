@@ -6,6 +6,8 @@ import issues
 import orders
 import employee
 import forklift
+import crash
+
 
 SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
@@ -25,7 +27,8 @@ class Warehouse:
         self.items_received = 0                                         # liczba towarów otrzymanych z dostawy
         self.tasks = simpy.Container(environ)
         self.forklifts = simpy.Store(self.envi, capacity=1000)  # wózki widłowe
-        self.breaks = 0                                                 # obiekt odpowiedzialny za przerwy
+        self.breaks = None                                              # obiekt odpowiedzialny za przerwy
+        self.crash = None                                               # obiekt odpowiedzialny za awarie
         self.idle = True                                                # brak pracy
         self.empty = False                                              # czy magazyn jest pusty
         self.issues = issues.Issues()                                   # zgloszone problemy
@@ -74,6 +77,12 @@ class Warehouse:
         self.breaks = breaks
         self.envi.process(breaks.run())
 
+    def generate_crash(self, probability):
+        yield self.envi.timeout(0)
+        cr = crash.Crash(probability, self)
+        self.crash = cr
+        self.envi.process(cr.run())
+
 
 #
 #
@@ -91,4 +100,5 @@ class Warehouse:
 # env.process(war.hire_employees(3, orders, delivery))                    # dodanie pracowników
 #
 #
-# env.run(until=200)                                                      # rozpoczęcie symulacji do zadanego czasu
+# env.run(until=200)
+

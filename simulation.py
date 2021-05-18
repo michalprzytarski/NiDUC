@@ -25,8 +25,11 @@ class Simulation:
         self.env.process(self.war.generate_deliveries(self.delivery))  # rozpoczęcie procesu generowania dostaw
         self.env.process(self.war.generate_orders(self.orders))  # rozpoczęcie procesu generowania zamówień
         self.env.process(self.war.hire_employees(self.num_of_employees, self.orders, self.delivery))  # dodanie pracowników
+        self.env.process(self.war.generate_crash(1))
+
         self.env.run(until=200)  # rozpoczęcie symulacji do zadanego czasu
 
 
 sim = Simulation(100, 4)
 sim.run()
+

@@ -26,6 +26,8 @@ class Employee:
         while True:
             if self.warehouse.breaks.is_it_breaktime:
                 yield self.warehouse.envi.process(self.go_on_break())
+            if self.warehouse.crash.war_crashed:
+                yield self.warehouse.envi.process(self.wait_for_fix())
             else:
                 self.waiting = True
                 try:
@@ -33,7 +35,10 @@ class Employee:
                     yield self.warehouse.tasks.get(1)                               # czekanie na zadanie
                     self.idle_time += self.warehouse.envi.now - idle_time_start     # koniec pomiaru czasu bezczynności
                 except simpy.Interrupt:
-                    yield self.warehouse.envi.process(self.go_on_break())
+                    if self.warehouse.breaks.is_it_breaktime:
+                        yield self.warehouse.envi.process(self.go_on_break())
+                    if self.warehouse.crash.war_crashed:
+                        yield self.warehouse.envi.process(self.wait_for_fix())
                 self.waiting = False
 
                 if self.orders.priority > self.delivery.priority or (
@@ -57,6 +62,13 @@ class Employee:
                     yield self.warehouse.envi.process(self.take_delivery(items_to_take))
                     self.warehouse.empty = False
             yield self.warehouse.envi.process(self.report_issues())
+
+
+    def wait_for_fix(self):
+        print("Pracownik", self.employee_id, "czeka na koniec awarii")
+        yield self.warehouse.envi.timeout(self.warehouse.crash.crash_duration - (
+                self.warehouse.envi.now - self.warehouse.crash.last_crash_time))  # awaria
+        print("Pracownik", self.employee_id, "wraca do pracy po awarii")
 
     # przerwa!
     def go_on_break(self):
@@ -111,3 +123,4 @@ class Employee:
     def next_employee_id(self):
         global EMPLOYEE_ID
         EMPLOYEE_ID += 1
+
