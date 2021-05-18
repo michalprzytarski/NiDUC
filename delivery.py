@@ -6,8 +6,9 @@ DELIVERY_PRIORITY = 1           # priorytet dostaw
 
 class Delivery:
 
-    def __init__(self, warehouse):
+    def __init__(self, tempo, warehouse):
         self.warehouse = warehouse
+        self.tempo = tempo
         self.delivery_items_queue = simpy.Container(warehouse.envi)     # przedmiotwy z dostawy oczekujące na odbiór
         self.priority = DELIVERY_PRIORITY
 
