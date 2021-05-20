@@ -20,7 +20,6 @@ class Simulation:
         self.num_of_employees = num_of_employees
 
     def run(self):
-        # war.buy_forklifts(2)
         self.env.process(self.war.generate_breaks([50, 120], 15))  # rozpoczecie procesu generowania przerw
         self.env.process(self.war.generate_deliveries(self.delivery))  # rozpoczęcie procesu generowania dostaw
         self.env.process(self.war.generate_orders(self.orders))  # rozpoczęcie procesu generowania zamówień

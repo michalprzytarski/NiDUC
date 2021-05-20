@@ -16,13 +16,18 @@ class Delivery:
         self.priority = DELIVERY_PRIORITY
 
     def generate_wait_period(self):
-        number_factor = 1 / fabs(HEAP - self.warehouse.envi.now)  # liczymy współczynnik, im dalej od szczytu tym większy
-        extra_number = int(10 * number_factor)                    # w zależności od współczynnika liczymy dodatkową ilośc czasu do odczekania
-        return int(numpy.random.normal(7, 2) + extra_number)           # losujemy liczbe całkowitą z zadanego przedziału i dodajemy dodatkową ilość
+        while True:                                                     # imitacja petli do-while aby a != 0
+            a = fabs(HEAP-self.warehouse.envi.now)
+            if a != 0:
+                break
+
+        number_factor = 1 / a                                           # liczymy współczynnik, im dalej od szczytu tym większy
+        extra_number = int(10 * number_factor)                          # w zależności od współczynnika liczymy dodatkową ilośc czasu do odczekania
+        return int(numpy.random.normal(7, 2) + extra_number)            # losujemy liczbe całkowitą z zadanego przedziału i dodajemy dodatkową ilość
 
     # generowanie losowego rozmiaru dostawy
     def generate_delivery_size(self):
-        return int(numpy.random.normal(10, 2))                         # losowanie liczby całkowitej z rozkładu normalnego
+        return int(numpy.random.normal(10, 2))                          # losowanie liczby całkowitej z rozkładu normalnego
 
     def run(self):
         while True:

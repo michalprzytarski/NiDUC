@@ -26,7 +26,7 @@ class Warehouse:
         self.orders_sent = 0                                            # liczba wysłanych zamównień
         self.items_received = 0                                         # liczba towarów otrzymanych z dostawy
         self.tasks = simpy.Container(environ)
-        self.forklifts = simpy.Store(self.envi, capacity=1000)  # wózki widłowe
+        self.forklifts = []                                             # wózki widłowe
         self.breaks = None                                              # obiekt odpowiedzialny za przerwy
         self.crash = None                                               # obiekt odpowiedzialny za awarie
         self.idle = True                                                # brak pracy
@@ -35,24 +35,30 @@ class Warehouse:
 
     # losowanie czasu oczekiwania
     def generate_wait_period(self):
-        return numpy.random.exponential(15)                             # losowa z rozkładu wykładniczego
+        return numpy.random.exponential(15)                                         # losowa z rozkładu wykładniczego
 
     # dodawanie pracowików
     def hire_employees(self, num_of_employees, orders, delivery):
         for i in range(0, num_of_employees):
             yield self.envi.timeout(0.1)
-            capacity = numpy.random.randint(1, 3)
-            emp = employee.Employee(self, delivery, orders, capacity)   # stworzenie obiektu pracownika
+            has_forklift_license = numpy.random.randint(1, 3)
+            if has_forklift_license == 1:
+                has_forklift_license = True
+                emp_forklift = self.buy_forklift()
+            else:
+                has_forklift_license = False
+                emp_forklift = None
+            emp = employee.Employee(self, delivery, orders, has_forklift_license, emp_forklift)   # stworzenie obiektu pracownika
             self.employees.append(emp)
             print("Zatrudniono pracownika o id", emp.employee_id)
 
         # dodawanie wózków widłowych
-    def buy_forklifts(self, num_of_forklifts):
-        for i in range(0, num_of_forklifts):
-            yield self.envi.timeout(0.1)
-            fork = forklift.Forklift(self, 3)                           # stworzenie obiektu wózka
-            self.forklifts.put(fork)
-            print("Kupiono wózek widłowy o nr", fork.forklift_id)
+    def buy_forklift(self):
+        capacity = numpy.random.randint(5, 15)
+        fork = forklift.Forklift(self, capacity)                                       # stworzenie obiektu wózka
+        self.forklifts.append(fork)
+        print("Kupiono wózek widłowy o nr", fork.forklift_id)
+        return fork
 
     # generowanie dostaw
     def generate_deliveries(self, delivery):
