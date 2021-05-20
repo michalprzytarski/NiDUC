@@ -56,19 +56,13 @@ class Warehouse:
 
     # generowanie dostaw
     def generate_deliveries(self, delivery):
-        while True:
-            period = self.generate_wait_period()                        # wylosowanej ilości czasu do odczekania
-            yield self.envi.timeout(period)                             # odczekanie wylosowanej ilości czasu
-            print("Nowa dostawa!")
-            delivery.run()                                              # wystartowanie procesu dostawy
+        yield self.envi.timeout(0)
+        self.envi.process(delivery.run())
 
     # generowanie zamówień
     def generate_orders(self, orders):
-        while True:
-            period = self.generate_wait_period()                        # wylosowanie ilości czasu do odczekania
-            yield self.envi.timeout(period)                             # odczekanie wylosowanej ilości czasu
-            print("Nowe zamówienia")
-            orders.run()                                                # wystartowanie procesu zamówień
+        yield self.envi.timeout(0)
+        self.envi.process(orders.run())
 
     # generowanie przerw
     def generate_breaks(self, break_times, break_duration):
