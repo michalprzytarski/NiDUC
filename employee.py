@@ -123,3 +123,4 @@ class Employee:
     def next_employee_id(self):
         global EMPLOYEE_ID
         EMPLOYEE_ID += 1
+
