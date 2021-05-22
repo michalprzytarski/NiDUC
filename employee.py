@@ -132,10 +132,10 @@ class Employee:
     def report_issues(self):
         yield self.warehouse.envi.timeout(0)
         if self.warehouse.items_stored.level == 0 and self.warehouse.empty == False:
-            self.warehouse.issues.warhouse_is_empty()
+            self.warehouse.issues.warhouse_is_empty(self.warehouse.envi.now)
             self.warehouse.empty = True
         if self.warehouse.tasks.level == 0 and self.warehouse.idle == False:
-            self.warehouse.issues.warhouse_is_idle()
+            self.warehouse.issues.warhouse_is_idle(self.warehouse.envi.now)
             self.warehouse.idle = True
 
     # inkrementacja id
