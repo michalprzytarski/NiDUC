@@ -5,18 +5,17 @@ import orders
 
 import warehouse
 
-SIMULATION_TEMPO = 10  # tempo symulacji
 DELIVERY_TEMPO = 1  # tempo dostaw
 ORDERS_TEMPO = 1  # tempo zamówień
 
 
 class Simulation:
 
-    def __init__(self, capacity, num_of_employees):
-        self.env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)  # stworzenie środkiska symulacji
+    def __init__(self, capacity, num_of_employees, simulation_tempo):
+        self.env = simpy.rt.RealtimeEnvironment(simulation_tempo)  # stworzenie środkiska symulacji
         self.war = warehouse.Warehouse(capacity, self.env)  # stworzenie obiektu magazynu
-        self.delivery = delivery.Delivery(DELIVERY_TEMPO, self.war)  # stworzenie obiektu dostaw
-        self.orders = orders.Orders(ORDERS_TEMPO, self.war)  # stworzenie obiektu zamówień
+        self.delivery = delivery.Delivery(DELIVERY_TEMPO, self.war, 50)  # stworzenie obiektu dostaw
+        self.orders = orders.Orders(ORDERS_TEMPO, self.war, 50)  # stworzenie obiektu zamówień
         self.num_of_employees = num_of_employees
 
     def run(self):
@@ -29,6 +28,6 @@ class Simulation:
         self.env.run(until=200)  # rozpoczęcie symulacji do zadanego czasu
 
 
-sim = Simulation(100, 4)
+sim = Simulation(100, 4, 1)
 sim.run()
 
