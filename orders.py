@@ -4,21 +4,21 @@ import numpy
 import simpy
 
 ORDERS_PRIORITY = 0             # priorytet zamówień
-HEAP = 100                      # czas szczytu zamówień
 
 
 class Orders:
 
-    def __init__(self, tempo, warehouse):
+    def __init__(self, tempo, warehouse, heap_time):
         self.warehouse = warehouse
         self.tempo = tempo
         self.orders_queue = simpy.Container(warehouse.envi)             # zamówienia oczekujące na realizację
         self.priority = ORDERS_PRIORITY
+        self.heap_time = heap_time                                      # czas szczytu zamówień
 
     # generowanie losowej liczby całkowitej dla ilości zamówień
     def generate_order_number(self):
         while True:                                                             # imitacja petli do-while aby a != 0
-            a = fabs(HEAP-self.warehouse.envi.now)
+            a = fabs(self.heap_time-self.warehouse.envi.now)
             if a != 0:
                 break
 
@@ -27,7 +27,11 @@ class Orders:
         return int(numpy.random.randint(3, 8) + extra_number)                   # losujemy liczbe całkowitą z zadanego przedziału i dodajemy dodatkową ilość
 
     def generate_wait_period(self):
-        return int(numpy.random.normal(5, 2))                                   # losowa liczba z rozkładu normalnego (loc, scale, size)
+        wait_period = numpy.random.normal(7-self.tempo, 2)
+        if(wait_period<1):
+            return 1
+        else:
+            return wait_period                                # losowa liczba z rozkładu normalnego (loc, scale, size)
 
     def run(self):
         while True:
