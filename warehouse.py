@@ -1,3 +1,4 @@
+
 import simpy
 import numpy
 import break_time
@@ -8,6 +9,8 @@ import employee
 import forklift
 import crash
 
+def test_method(self):
+    print('test z warehouse\n') # testowa metoda (w przyszłości zostanie usunięta)
 
 SIMULATION_TEMPO = 0.1          # tempo symulacji
 DELIVERY_TEMPO = 1              # tempo dostaw
@@ -101,4 +104,3 @@ class Warehouse:
 #
 #
 # env.run(until=200)
-
