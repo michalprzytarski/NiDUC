@@ -1,3 +1,4 @@
+import warehouse
 import kivy
 from kivy.app import App
 from kivy.uix.label import Label
@@ -6,6 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 
 kivy.require('2.0.0')  # replace with your current kivy version !
@@ -22,6 +24,9 @@ class MainPanel(BoxLayout):
         info_panel = InfoPanel()
         self.add_widget(info_panel)
 
+    def refresh(self, dt):
+        pass
+
 
 # Panel służący do ustawiania parametrów symulacji
 class ControlPanel(GridLayout):
@@ -36,12 +41,12 @@ class ControlPanel(GridLayout):
 
         # Przycisk start
         self.start_button = Button(text='SATRT')
-        # self.start_button.bind(on_press=)                #DODAC METODE STARTUJACA
+        # self.start_button.bind(on_press=warehouse.Warehouse())                # DODAC METODE STARTUJACA
         self.add_widget(self.start_button)
 
         # Przycisk STOP
         self.stopButton = Button(text='STOP')
-        # self.stopButton.bind(on_press=)                #DODAC METODE STARTUJACA
+        # self.stopButton.bind(on_press=)                # DODAC METODE STOPUJACA
         self.add_widget(self.stopButton)
 
 
@@ -124,10 +129,19 @@ class WarehouseInfoPanel(GridLayout):
 
 # Główne okno aplikacji
 class MainWindow(App):
+    # def __init__(self, **kwargs):
+        # super().__init__(kwargs)
+        # self.simulation = warehouse.Warehouse()
+
     def build(self):
         self.title = 'Symulacja magazynu'
         main_panel = MainPanel()
+
+        # odświeżanie okna
+        Clock.schedule_interval(print("test\n"), 1.0/60.0)
+
         return main_panel
+
 
 
 if __name__ == '__main__':

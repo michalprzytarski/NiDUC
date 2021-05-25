@@ -1,3 +1,4 @@
+
 import simpy
 import numpy
 import delivery
@@ -7,7 +8,11 @@ import employee
 SIMULATION_TEMPO = 0.1
 DELIVERY_TEMPO = 1
 ORDERS_TEMPO = 1
-START_ITEMS=0
+START_ITEMS = 0
+
+
+def test_method(self):
+    print('test z warehouse\n')
 
 
 class Warehouse:
@@ -19,6 +24,7 @@ class Warehouse:
         self.employees = simpy.Store(self.envi, capacity=1000)
         self.orders_sent=0
         self.items_received=0
+        self.delivery = delivery.Delivery(DELIVERY_TEMPO, self)
 
     def generate_wait_period(self):
         return numpy.random.exponential(15)  # losowa z rozkładu wykładniczego
@@ -43,17 +49,16 @@ class Warehouse:
             print("Nowe zamówienia")
             self.envi.process(orders.run())
 
-
 numpy.random.seed(0)
 env = simpy.rt.RealtimeEnvironment(SIMULATION_TEMPO)
 war = Warehouse(5, env)
 war.hire_employees(3)
 delivery = delivery.Delivery(DELIVERY_TEMPO, war)
 orders = orders.Orders(ORDERS_TEMPO, war)
-#deliveries=env.process(delivery.run())
+deliveries=env.process(delivery.run())
 
 
 env.process(war.generate_deliveries(delivery))
 env.process(war.generate_orders(orders))
 
-env.run(until=200)
+env.run(until=1)
