@@ -90,12 +90,12 @@ class NumberPanel(GridLayout):
         self.add_widget(self.numberOfForkliftsTextInput)
 
 
-# klasa używana do stylizowania Label w panelu NumberPanel
+# klasa używana do stylizowania Label w panelu ControlGridPanel
 class NumberPanelLabel(Label):
     pass
 
 
-# klasa uzywana do stylizowania TextInput w panelu NumberPanel
+# klasa uzywana do stylizowania TextInput w panelu ControlGridPanel
 class NumberPanelTextInput(TextInput):
     pass
 

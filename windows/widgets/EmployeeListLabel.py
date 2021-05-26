@@ -5,13 +5,14 @@ kivy.require('2.0.0')  # replace with your current kivy version !
 
 # klasa uzywana do stylizowania informacji o pracowniku
 class EmployeeListLabel(Label):
-    def __init__(self, **kwargs):
-        super(EmployeeListLabel, self).__init__(**kwargs)
+    pass
+    # def __init__(self, **kwargs):
+        # super(EmployeeListLabel, self).__init__(**kwargs)
 
-        self.size_hint_y = None
-        self.height = self.texture_size[1]
-        self.text_size = (self.width, None)
-        self.padding = (2, 2)
+        # self.size_hint_y = None
+        # self.height = self.texture_size[1]
+        # self.text_size = (self.width, None)
+        # self.padding = (2, 2)
         #with self.canvas:
             # Add a red color
             #Color(1., 0, 0)

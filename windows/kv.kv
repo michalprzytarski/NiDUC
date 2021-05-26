@@ -1,0 +1,16 @@
+<EmployeeListLabel>:
+    size_hint_y: None
+    height: self.texture_size[1]
+    text_size: self.width, None
+    padding: 10, 10
+    halign: 'center'
+
+    canvas.before:
+        Color:
+            rgba: .18, 0.18, 0.18, 1.0
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<NumberPanelLabel>:
+    text_size: self.width, None
