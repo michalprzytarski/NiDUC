@@ -35,7 +35,7 @@ class MainWindowApp(App):
     def timer_tick(self, *args, **kwargs):
         if self.sim.war != None:
             self.main_panel.info_panel.employee_list_scroll_view.employee_list_grid.refresh_employee_grid(self.sim.war.employees)
-            self.main_panel.info_panel.warehouse_info_panel.refresh_warehouse_info(self.sim.war)
+            self.main_panel.info_panel.warehouse_info_panel.refresh_warehouse_info(self.sim)
 
     def build(self):
         self.title = 'Symulacja magazynu'

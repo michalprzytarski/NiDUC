@@ -36,14 +36,14 @@ class ControlGridPanel(GridLayout):
         self.number_of_start_items_text_input = NumberPanelTextInput(text='10')
         self.add_widget(self.number_of_start_items_text_input)
 
-        # Wprowadzanie ilości dostaw dziennie
-        self.add_widget(NumberPanelLabel(text='Ilość dostaw dziennie: '))
-        self.number_of_daily_deliveries_text_input = NumberPanelTextInput(text='5')
+        # Wprowadzanie tempa przychodzenia dostaw
+        self.add_widget(NumberPanelLabel(text='Tempo przychodzenia dostaw: '))
+        self.number_of_daily_deliveries_text_input = NumberPanelTextInput(text='2')
         self.add_widget(self.number_of_daily_deliveries_text_input)
 
-        # Wprowadzanie ilości zamówień dziennie
-        self.add_widget(NumberPanelLabel(text='Ilość zamówień dziennie: '))
-        self.number_of_daily_orders_text_input = NumberPanelTextInput(text='5')
+        # Wprowadzanie tempa przychodzenia zamówień
+        self.add_widget(NumberPanelLabel(text='Tempo przychodzenia zamówień: '))
+        self.number_of_daily_orders_text_input = NumberPanelTextInput(text='2')
         self.add_widget(self.number_of_daily_orders_text_input)
 
         # Wprowadzanie prawdopodobieństwa awarii
@@ -58,8 +58,6 @@ class ControlGridPanel(GridLayout):
 
         # Przycisk start
         self.start_button = Button(text='START')
-        self.start_button
-        self.start_button.size = (self.width * 0.5, self.height * 0.5)
         self.start_button.bind(on_press=lambda *args: self.start_callback(sim, sim_thread, *args))
         self.add_widget(self.start_button)
 
@@ -77,16 +75,18 @@ class ControlGridPanel(GridLayout):
         sim.set_employees_number(int(self.number_of_workers_text_input.text))
         sim.set_crush_probability(int(self.crush_probability_text_input.text))
 
-        # print(self.number_of_workers_text_input.text)
-
-        # sim.init_environment(1)
-        # sim.init_warehouse(100, 5)
-        # sim.init_orders(1, 50)
-        # sim.init_delivery(1, 50)
-
         sim_thread.start()
         self.start_button.disabled = True
         self.stop_button.disabled = False
+
+        self.number_of_workers_text_input.disabled = True
+        self.number_of_forklifts_text_input.disabled = True
+        self.warehouse_space_text_input.disabled = True
+        self.number_of_start_items_text_input.disabled = True
+        self.number_of_daily_deliveries_text_input.disabled = True
+        self.number_of_daily_orders_text_input.disabled = True
+        self.crush_probability_text_input.disabled = True
+        self.simulation_tempo_text_input.disabled = True
 
     # Metoda stopująca symulacje
     def stop_callback(self, *arg):
