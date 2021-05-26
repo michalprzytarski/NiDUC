@@ -1,4 +1,7 @@
-import warehouse
+# import warehouse
+import simulation
+import threading
+from threading import Thread
 import kivy
 from kivy.app import App
 from kivy.uix.label import Label
@@ -15,23 +18,30 @@ kivy.require('2.0.0')  # replace with your current kivy version !
 
 # Panel wypełniający całe okno
 class MainPanel(BoxLayout):
-    def __init__(self, **kwargs):
+
+    def __init__(self, sim, **kwargs):
         super(MainPanel, self).__init__(**kwargs)
 
-        control_panel = ControlPanel()
-        self.add_widget(control_panel)
+        self.control_panel = ControlPanel(sim)
+        self.add_widget(self.control_panel)
 
-        info_panel = InfoPanel()
-        self.add_widget(info_panel)
+        self.info_panel = InfoPanel(sim)
+        self.add_widget(self.info_panel)
 
-    def refresh(self, dt):
-        pass
+    # def refresh(self, dt):
+        # pass
 
 
 # Panel służący do ustawiania parametrów symulacji
 class ControlPanel(GridLayout):
-    def __init__(self, **kwargs):
+
+
+
+    def __init__(self, sim, **kwargs):
         super(ControlPanel, self).__init__(**kwargs)
+
+        self.sim = simulation.Simulation(100, 4, 1)
+        self.sim_thread = Thread(target=sim.run)
 
         # Tytuł sekcji
         self.add_widget(Label(text="PARAMETRY SYMULACJI", text_size=(self.width, None)))
@@ -41,13 +51,27 @@ class ControlPanel(GridLayout):
 
         # Przycisk start
         self.start_button = Button(text='SATRT')
-        # self.start_button.bind(on_press=warehouse.Warehouse())                # DODAC METODE STARTUJACA
+        self.start_button.bind(on_press=self.start_callback)                # DODAC METODE STARTUJACA
         self.add_widget(self.start_button)
 
         # Przycisk STOP
-        self.stopButton = Button(text='STOP')
-        # self.stopButton.bind(on_press=)                # DODAC METODE STOPUJACA
-        self.add_widget(self.stopButton)
+        self.stop_button = Button(text='STOP', disabled=True)
+        self.stop_button.bind(on_press=self.stop_callback)                # DODAC METODE STOPUJACA
+        self.add_widget(self.stop_button)
+
+    def start_callback(self, *arg):
+        # self.sim.test()
+        self.sim_thread.start()
+        self.start_button.disabled = True
+        self.stop_button.disabled = False
+
+        # sim.test()
+        # sim.run()
+        # print('The button <%s> is being pressed' % instance.text)
+
+    def stop_callback(self, *arg):
+        print('The button STOP is being pressed')
+        # threading.currentThread().join()
 
 
 # Panel służący do wprowadzania wartości do InputText
@@ -66,44 +90,49 @@ class NumberPanel(GridLayout):
         self.add_widget(self.numberOfForkliftsTextInput)
 
 
-# klasa używana do stylizowania Label w panelu NumberPanel
+# klasa używana do stylizowania Label w panelu ControlGridPanel
 class NumberPanelLabel(Label):
     pass
 
 
-# klasa uzywana do stylizowania TextInput w panelu NumberPanel
+# klasa uzywana do stylizowania TextInput w panelu ControlGridPanel
 class NumberPanelTextInput(TextInput):
     pass
 
 
 # panel wyświetlający informacje o aktualnym stanie symulacji
 class InfoPanel(BoxLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, sim, **kwargs):
         super(InfoPanel, self).__init__(**kwargs)
 
-        employee_list_scroll_view = EmployeeListScrollView()
-        self.add_widget(employee_list_scroll_view)
+        self.employee_list_scroll_view = EmployeeListScrollView(sim)
+        self.add_widget(self.employee_list_scroll_view)
 
-        warehouse_info_panel = WarehouseInfoPanel()
-        self.add_widget(warehouse_info_panel)
+        self.warehouse_info_panel = WarehouseInfoPanel()
+        self.add_widget(self.warehouse_info_panel)
 
 
 # skrolowalna lista pracowników wraz z inforamacjami o nich
 class EmployeeListScrollView(ScrollView):
-    def __init__(self, **kwargs):
+    def __init__(self, sim, **kwargs):
         super(EmployeeListScrollView, self).__init__(**kwargs)
 
-        employee_list_grid = EmployeeListGrid()
-        self.add_widget(employee_list_grid)
+        self.employee_list_grid = EmployeeListGrid(sim)
+        self.add_widget(self.employee_list_grid)
 
 
 # panel znajdujący się w EmployeeListScrollView służący do porządkowania informacji o pracownikach
 class EmployeeListGrid(GridLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, sim, **kwargs):
         super(EmployeeListGrid, self).__init__(**kwargs)
-        self.add_widget(EmployeeListLabel(text='Pracownik x'))
-        self.add_widget(EmployeeListLabel(text='wolny'))
-        self.add_widget(EmployeeListLabel(text='zmęczenie: 0'))
+
+        for i in range(100):
+            self.add_widget(EmployeeListLabel(text='Pracownik x'))
+            self.add_widget(EmployeeListLabel(text='wolny'))
+            self.add_widget(EmployeeListLabel(text='zmęczenie: 0'))
+
+    def refresh_employee_grid(self):
+        print("test odwierzania pracownikow")
 
 
 # klasa uzywana do stylizowania informacji o pracowniku
@@ -129,19 +158,27 @@ class WarehouseInfoPanel(GridLayout):
 
 # Główne okno aplikacji
 class MainWindow(App):
-    # def __init__(self, **kwargs):
-        # super().__init__(kwargs)
-        # self.simulation = warehouse.Warehouse()
+
+    def __init__(self, **kwargs):
+        super(MainWindow, self).__init__(**kwargs)
+        self.sim = simulation.Simulation(100, 4, 1)
+
+    # metoda wywoływana na ticku timera, używana do odświerzania okna
+    def timer_tick(self, *args, **kwargs):
+        pass
+        # self.main_panel.info_panel.employee_list_scroll_view.employee_list_grid.refresh_employee_grid()
+        # pass
+        # print("test zegar")
 
     def build(self):
-        self.title = 'Symulacja magazynu'
-        main_panel = MainPanel()
+        self.title = 'Prototyp okna'
 
         # odświeżanie okna
-        Clock.schedule_interval(print("test\n"), 1.0/60.0)
+        Clock.schedule_interval(self.timer_tick, 1.0)  #/60.0)  # aplikacja okna 60 razy na sekunde wywoluje metode timer_tick
 
-        return main_panel
+        self.main_panel = MainPanel(self.sim)
 
+        return self.main_panel
 
 
 if __name__ == '__main__':
