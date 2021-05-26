@@ -37,7 +37,7 @@ class ControlGridPanel(GridLayout):
         self.add_widget(self.number_of_daily_deliveries)
 
         # Przycisk start
-        self.start_button = Button(text='SATRT')
+        self.start_button = Button(text='START')
         self.start_button
         self.start_button.size = (self.width * 0.5, self.height * 0.5)
         self.start_button.bind(on_press=lambda *args: self.start_callback(sim_thread, *args))

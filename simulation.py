@@ -31,6 +31,6 @@ class Simulation:
         print("test z symulacji")
 
 
-# sim = Simulation(100, 4, 1)
-# sim.run()
+#  sim = Simulation(100, 4, 1)
+#  sim.run()
 

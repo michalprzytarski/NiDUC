@@ -26,5 +26,5 @@ class EmployeeListGrid(GridLayout):
         for employee in employees:
             self.add_widget(EmployeeListLabel(text='%s' % employee.employee_id))
             self.add_widget(EmployeeListLabel(text='%s' % employee.experience))
-            self.add_widget(EmployeeListLabel(text='%s' % "Czeka" if employee.waiting else "Pracuje", color=((1, 0, 0, 1) if employee.waiting else (0, 1, 0, 1))))
+            self.add_widget(EmployeeListLabel(text='%s' % "Brak zadań" if employee.waiting else "W trakcie zadania", color=((1, 0, 0, 1) if employee.waiting else (0, 1, 0, 1))))
             self.add_widget(EmployeeListLabel(text='%s' % employee.tiredness))
