@@ -10,3 +10,4 @@ class NumberPanelLabel(Label):
 
         # Dodanie styli do klasy
         self.text_size = (self.width, None)
+        self.halign = 'center'

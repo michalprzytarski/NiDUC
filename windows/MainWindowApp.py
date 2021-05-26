@@ -27,14 +27,15 @@ class MainWindowApp(App):
 
     def __init__(self, **kwargs):
         super(MainWindowApp, self).__init__(**kwargs)
-        self.sim = simulation.Simulation(100, 20, 1)
+        self.sim = simulation.Simulation()
         self.sim_thread = Thread(target=self.sim.run)
         self.main_panel = MainPanel(self.sim, self.sim_thread)
 
     # metoda wywoływana na ticku timera, używana do odświerzania okna
     def timer_tick(self, *args, **kwargs):
-        self.main_panel.info_panel.employee_list_scroll_view.employee_list_grid.refresh_employee_grid(self.sim.war.employees)
-        self.main_panel.info_panel.warehouse_info_panel.refresh_warehouse_info(self.sim.war)
+        if self.sim.war != None:
+            self.main_panel.info_panel.employee_list_scroll_view.employee_list_grid.refresh_employee_grid(self.sim.war.employees)
+            self.main_panel.info_panel.warehouse_info_panel.refresh_warehouse_info(self.sim.war)
 
     def build(self):
         self.title = 'Symulacja magazynu'

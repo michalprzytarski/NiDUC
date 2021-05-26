@@ -42,7 +42,7 @@ class Simulation:
         self.env = simpy.rt.RealtimeEnvironment(simulation_tempo)  # stworzenie środkiska symulacji
         self.env_inited = True
 
-    def init_warhouse(self, capacity, start_items):
+    def init_warehouse(self, capacity, start_items):
         self.war = warehouse.Warehouse(capacity, start_items, self.env)  # stworzenie obiektu magazynu
         self.war_inited = True
 
@@ -72,7 +72,7 @@ class Simulation:
 
 #sim = Simulation()
 #sim.init_environment(1)
-#sim.init_warhouse(100, 5)
+#sim.init_warehouse(100, 5)
 #sim.init_orders(1,50)
 #sim.init_delivery(1, 50)
 #sim.run()
