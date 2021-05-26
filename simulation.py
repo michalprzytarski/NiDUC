@@ -27,7 +27,10 @@ class Simulation:
 
         self.env.run(until=200)  # rozpoczęcie symulacji do zadanego czasu
 
+    def test(self):
+        print("test z symulacji")
 
-sim = Simulation(100, 4, 1)
-sim.run()
+
+# sim = Simulation(100, 4, 1)
+# sim.run()
 
