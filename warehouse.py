@@ -12,17 +12,12 @@ import crash
 def test_method(self):
     print('test z warehouse\n') # testowa metoda (w przyszłości zostanie usunięta)
 
-SIMULATION_TEMPO = 0.1          # tempo symulacji
-DELIVERY_TEMPO = 1              # tempo dostaw
-ORDERS_TEMPO = 1                # tempo zamówień
-START_ITEMS = 5                 # liczba początkowych towarów
-
 
 class Warehouse:
 
-    def __init__(self, capacity, environ):
+    def __init__(self, capacity, start_items, environ):
         self.capacity = capacity                                        # pojemność magazynu
-        self.items_stored = simpy.Container(environ, init=START_ITEMS,
+        self.items_stored = simpy.Container(environ, init=start_items,
                                             capacity=self.capacity)     # pojemnik na składowane towary
         self.envi = environ                                             # środowisko
         self.employees = []                                             # pracownicy
