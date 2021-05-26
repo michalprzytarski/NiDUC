@@ -16,7 +16,7 @@ class Simulation:
         self.war = None     #magazyn
         self.delivery = None#dostawy
         self.orders = None  #zamówienia
-        self.num_of_employees = 0 #liczba pracowników
+        self.num_of_employees = 5 #liczba pracowników
 
         self.crash_probability = 1  #prawdopodobieństwo awarii
         self.break_times = [60, 120] #czasy przerw
@@ -70,6 +70,10 @@ class Simulation:
         print("test z symulacji")
 
 
-#  sim = Simulation(100, 4, 1)
-#  sim.run()
+#sim = Simulation()
+#sim.init_environment(1)
+#sim.init_warhouse(100, 5)
+#sim.init_orders(1,50)
+#sim.init_delivery(1, 50)
+#sim.run()
 
