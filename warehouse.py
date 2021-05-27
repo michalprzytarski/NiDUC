@@ -9,9 +9,6 @@ import employee
 import forklift
 import crash
 
-def test_method(self):
-    print('test z warehouse\n') # testowa metoda (w przyszłości zostanie usunięta)
-
 
 class Warehouse:
 

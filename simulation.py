@@ -66,9 +66,29 @@ class Simulation:
     def set_break_times(self, break_times):
         self.break_times = break_times
 
-    def test(self):
-        print("test z symulacji")
+    def get_warehouse_occupation(self):
+        occupation = self.war.items_stored.level / self.war.capacity
+        return int(occupation * 100)
 
+    def get_employees_tiredness(self):
+        tiredness = 0
+        for employee in self.war.employees:
+            tiredness += employee.tiredness
+        if len(self.war.employees) != 0:
+            tiredness = tiredness // len(self.war.employees)
+        return tiredness
+
+    def get_deliveries_in_queue(self):
+        return self.delivery.delivery_items_queue.level
+
+    def get_orders_in_queue(self):
+        return self.orders.orders_queue.level
+
+    def get_is_crush(self):
+        return self.war.crash.war_crashed
+
+    def get_is_break(self):
+        return self.war.breaks.is_it_breaktime
 
 #sim = Simulation()
 #sim.init_environment(1)
