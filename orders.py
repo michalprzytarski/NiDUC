@@ -15,6 +15,11 @@ class Orders:
         self.priority = ORDERS_PRIORITY
         self.heap_time = heap_time                                      # czas szczytu zamówień
 
+    def force_orders(self, number_of_orders):
+        yield self.warehouse.envi.timeout(0)
+        self.orders_queue.put(number_of_orders)
+        self.warehouse.tasks.put(number_of_orders)
+        
     # generowanie losowej liczby całkowitej dla ilości zamówień
     def generate_order_number(self):
         while True:                                                             # imitacja petli do-while aby a != 0
