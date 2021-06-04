@@ -42,7 +42,7 @@ class Simulation:
         self.env = simpy.rt.RealtimeEnvironment(simulation_tempo)  # stworzenie środkiska symulacji
         self.env_inited = True
 
-    def init_warhouse(self, capacity, start_items):
+    def init_warehouse(self, capacity, start_items):
         self.war = warehouse.Warehouse(capacity, start_items, self.env)  # stworzenie obiektu magazynu
         self.war_inited = True
 
@@ -66,13 +66,33 @@ class Simulation:
     def set_break_times(self, break_times):
         self.break_times = break_times
 
-    def test(self):
-        print("test z symulacji")
+    def get_warehouse_occupation(self):
+        occupation = self.war.items_stored.level / self.war.capacity
+        return int(occupation * 100)
 
+    def get_employees_tiredness(self):
+        tiredness = 0
+        for employee in self.war.employees:
+            tiredness += employee.tiredness
+        if len(self.war.employees) != 0:
+            tiredness = tiredness // len(self.war.employees)
+        return tiredness
+
+    def get_deliveries_in_queue(self):
+        return self.delivery.delivery_items_queue.level
+
+    def get_orders_in_queue(self):
+        return self.orders.orders_queue.level
+
+    def get_is_crush(self):
+        return self.war.crash.war_crashed
+
+    def get_is_break(self):
+        return self.war.breaks.is_it_breaktime
 
 #sim = Simulation()
 #sim.init_environment(1)
-#sim.init_warhouse(100, 5)
+#sim.init_warehouse(100, 5)
 #sim.init_orders(1,50)
 #sim.init_delivery(1, 50)
 #sim.run()
