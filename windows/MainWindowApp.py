@@ -35,8 +35,6 @@ class MainWindowApp(App):
         self.sim_thread = Thread(target=self.sim.run)
         self.main_panel = MainPanel(self.sim, self.sim_thread)
 
-        self.iterator=0
-
         # self.occupation_plot = my_plot.Plot()
         self.occupation_thread = Thread(target=my_plot.plot)
         self.occupation_thread.start()
@@ -49,7 +47,8 @@ class MainWindowApp(App):
             self.main_panel.info_panel.warehouse_info_panel.refresh_warehouse_info(self.sim)
 
             self.occupation_writer.add_new_data(sim_time_to_add=self.sim.env.now, occupation_to_add=self.sim.get_warehouse_occupation(), working_to_add=self.sim.get_current_working())
-            self.iterator += 1
+            if not self.sim_thread.is_alive():
+                self.sim.war = None
 
     def build(self):
         self.title = 'Symulacja magazynu'
