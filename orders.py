@@ -16,11 +16,10 @@ class Orders:
         self.heap_time = heap_time                                      # czas szczytu zamówień
 
     def force_orders(self, number_of_orders):
-        yield self.warehouse.envi.timeout(0)
-        print("POCZATEK METODY FORCE_ORDERS\n")
-        self.orders_queue.put(number_of_orders)
-        self.warehouse.tasks.put(number_of_orders)
-        print('Dodano', number_of_orders, ' nowych zamowien\n')
+        # yield self.warehouse.envi.timeout(0)
+        print('Wymuszono', number_of_orders, ' nowych zamowien')
+        self.orders_queue.put(10)
+        self.warehouse.tasks.put(10)
         
     # generowanie losowej liczby całkowitej dla ilości zamówień
     def generate_order_number(self):

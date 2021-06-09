@@ -40,7 +40,7 @@ class Simulation:
             print("Nie wszystkie elmenty symualcji zostały zainicjowane!")
 
     def init_environment(self, simulation_tempo):
-        self.env = simpy.rt.RealtimeEnvironment(simulation_tempo)  # stworzenie środkiska symulacji
+        self.env = simpy.rt.RealtimeEnvironment(simulation_tempo, strict=False)  # stworzenie środkiska symulacji
         self.env_inited = True
 
     def init_warehouse(self, capacity, start_items):
@@ -107,8 +107,12 @@ class Simulation:
         # self.war.tasks.put(10)
         # yield self.env.process(self.orders.force_delivery(10))
         # self.env.process(self.orders.force_orders(10))
-        # self.orders.force_orders(number_of_orders=10)
-        print('DODANO 10 ZAMOWIEN')
+        self.orders.force_orders(10)
+        # print('DODANO 10 ZAMOWIEN')
+
+    def add_deliveries(self, x):
+        print('DODAJ 10 DOSTAW')
+        self.delivery.force_delivery(10)
 
 #sim = Simulation()
 #sim.init_environment(1)

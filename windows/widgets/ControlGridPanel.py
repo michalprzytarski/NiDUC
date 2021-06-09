@@ -74,7 +74,7 @@ class ControlGridPanel(GridLayout):
 
         # Przycisk dodawania dostaw
         self.add_delivery_button = Button(text='Dodaj 10 dostaw')
-        self.add_delivery_button.bind()
+        self.add_delivery_button.bind(on_press=sim.add_deliveries)
         self.add_delivery_button.disabled = True
         self.add_widget(self.add_delivery_button)
 
