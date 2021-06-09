@@ -35,10 +35,13 @@ class MainWindowApp(App):
         self.sim_thread = Thread(target=self.sim.run)
         self.main_panel = MainPanel(self.sim, self.sim_thread)
 
-        # self.occupation_plot = my_plot.Plot()
+        # # self.occupation_plot = my_plot.Plot()
         self.occupation_thread = Thread(target=my_plot.plot)
+        # self.occupation_thread = Thread(target=my_plot.plot)
         self.occupation_thread.start()
-        self.occupation_writer = data_writer.DataWriter(filename='warehouse_occupation')
+        # my_plot.plot()
+        # my_plot.plot(self, kill_thread=self.sim.kill_plot)
+        self.occupation_writer = data_writer.DataWriter(filename='plots_data')
 
     # metoda wywoływana na ticku timera, używana do odświerzania okna
     def timer_tick(self, *args, **kwargs):
@@ -54,7 +57,7 @@ class MainWindowApp(App):
         self.title = 'Symulacja magazynu'
 
         # odświeżanie okna
-        Clock.schedule_interval(self.timer_tick, 1 ) # 1.0/60.0)  # aplikacja okna 60 razy na sekunde wywoluje metode timer_tick
+        Clock.schedule_interval(self.timer_tick, 1) # 1.0/60.0)  # aplikacja okna 60 razy na sekunde wywoluje metode timer_tick
 
         return self.main_panel
 

@@ -114,6 +114,11 @@ class Simulation:
         print('DODAJ 10 DOSTAW')
         self.delivery.force_delivery(10)
 
+    def get_time(self):
+        time = self.env.now
+        time *= 2.4
+        return time
+
 #sim = Simulation()
 #sim.init_environment(1)
 #sim.init_warehouse(1000, 5)

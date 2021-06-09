@@ -61,10 +61,10 @@ class ControlGridPanel(GridLayout):
         self.start_button.bind(on_press=lambda *args: self.start_callback(sim, sim_thread, *args))
         self.add_widget(self.start_button)
 
-        # # Przycisk STOP
-        # self.stop_button = Button(text='STOP', disabled=True, padding=(10, 10))
-        # self.stop_button.bind(on_press=self.stop_callback)
-        # self.add_widget(self.stop_button)
+        # Przycisk STOP
+        self.stop_button = Button(text='STOP', padding=(10, 10))
+        self.stop_button.bind(on_press=self.stop_callback)
+        self.add_widget(self.stop_button)
 
         # Przycisk Dodawania zamówień
         self.add_orders_button = Button(text='Dodaj 10 zamówień')
@@ -103,6 +103,7 @@ class ControlGridPanel(GridLayout):
         self.simulation_tempo_text_input.disabled = True
 
     # Metoda stopująca symulacje
-    def stop_callback(self, *arg):
+    def stop_callback(self):
+        # sim.setKillPlot(True)
         print('The button STOP is being pressed')
         # threading.currentThread().join()

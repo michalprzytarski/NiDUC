@@ -18,6 +18,7 @@ class WarehouseInfoPanel(GridLayout):
         self.size_hint_y = 0.2
 
         # Utworzenie etkiet ze zmienną wartością tekstu
+        self.clock_label = Label(text='7:00', size_hint_x=.3)
         self.occupation_label = Label(text="0%", size_hint_x=.3)
         self.exhaust_label = Label(text="0%", size_hint_x=.3)
         self.items_to_take_label = Label(text="0", size_hint_x=.3)
@@ -25,6 +26,8 @@ class WarehouseInfoPanel(GridLayout):
         self.is_crush_label = Label(text="NIE", size_hint_x=.3)
         self.is_break_label = Label(text="NIE", size_hint_x=.3)
 
+        self.add_widget(WarehouseInfoLabel(text="Zegar: "))
+        self.add_widget(self.clock_label)
         self.add_widget(WarehouseInfoLabel(text="Zapełnienie magazynu: "))
         self.add_widget(self.occupation_label)
         self.add_widget(WarehouseInfoLabel(text="Średnie zmęczenie pracownika: "))
@@ -39,6 +42,13 @@ class WarehouseInfoPanel(GridLayout):
         self.add_widget(self.is_crush_label)
 
     def refresh_warehouse_info(self, sim):
+        time = sim.get_time()
+        hours = int(7 + (time//60) % 8)
+        minutes = int(time % 60)
+        if minutes < 10:
+            minutes = '0' + str(minutes)
+        self.clock_label.text = "%s:%s" % (hours, minutes)
+
         self.occupation_label.text = "%s %%" % sim.get_warehouse_occupation()
 
         self.exhaust_label.text = "%s" % sim.get_employees_tiredness()

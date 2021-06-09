@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-
 def plot():
     # plt.title('Procentowe zapełnienie magazynu w czasie')
     # print(plt.style.available)
@@ -19,10 +18,12 @@ def plot():
     # ax1.set_ylabel('Procent zapełnienia magazynu [%]')
 
     plt.tight_layout()
+    # plt.show(block=False)
     plt.show()
 
+
 def animate(i, ax1, ax2):
-    data = pd.read_csv('../data/warehouse_occupation.csv')
+    data = pd.read_csv('../data/plots_data.csv')
     x = data['sim_time']
     occupation = data['occupation_value']
     current_working = data['current_working_value']
@@ -30,13 +31,18 @@ def animate(i, ax1, ax2):
 
     ax1.cla()
     ax1.set_ylim(ymax=100, ymin=0)
+    ax1.set_xlabel('Czas')
     ax1.set_title('Procentowe zapełnienie magazynu w czasie')
     ax1.plot(x, occupation, label='Procent zapełnienia')
 
     ax2.cla()
     ax2.set_ylim(ymax=100, ymin=0)
+    ax2.set_xlabel('Czas')
     ax2.set_title('Procent pracowników aktualnie wykonujących zadanie')
     ax2.plot(x, current_working, label='Aktualnie wykonujący zadanie')
 
     # ax1.legend(loc='upper left')
     plt.tight_layout()
+
+def close():
+    pass
