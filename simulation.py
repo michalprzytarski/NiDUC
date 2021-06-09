@@ -16,7 +16,7 @@ class Simulation:
         self.war = None     #magazyn
         self.delivery = None#dostawy
         self.orders = None  #zamówienia
-        self.num_of_employees = 5 #liczba pracowników
+        self.num_of_employees = 100 #liczba pracowników
 
         self.crash_probability = 1  #prawdopodobieństwo awarii
         self.break_times = [60, 120] #czasy przerw
@@ -114,10 +114,10 @@ class Simulation:
         print('DODAJ 10 DOSTAW')
         self.delivery.force_delivery(10)
 
-#sim = Simulation()
-#sim.init_environment(1)
-#sim.init_warehouse(100, 5)
-#sim.init_orders(1,50)
-#sim.init_delivery(1, 50)
-#sim.run()
+sim = Simulation()
+sim.init_environment(1)
+sim.init_warehouse(1000, 5)
+sim.init_orders(10,100)
+sim.init_delivery(10, 100)
+sim.run()
 
