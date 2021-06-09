@@ -35,6 +35,7 @@ class Simulation:
             self.env.process(self.war.generate_crash(self.crash_probability))
 
             self.env.run(until=200)  # rozpoczęcie symulacji do zadanego czasu
+            print("ZAKONCZONO WATEK SYMULACJI!")
         else:
             print("Nie wszystkie elmenty symualcji zostały zainicjowane!")
 
@@ -91,15 +92,24 @@ class Simulation:
         return self.war.breaks.is_it_breaktime
 
     def get_current_working(self):
+        if len(self.war.employees) == 0:
+            return 0
         current_working = 0
         for employee in self.war.employees:
             if not employee.waiting:
                 current_working += 1
         return current_working / len(self.war.employees) * 100
 
-    def add_orders(self):
-        self.orders.force_orders(10)
-        
+    def add_orders(self, x):
+        print('DODAJ 10 ZAMOWIEN')
+        # yield self.env.timeout(0)
+        # self.orders.orders_queue.put(10)
+        # self.war.tasks.put(10)
+        # yield self.env.process(self.orders.force_delivery(10))
+        # self.env.process(self.orders.force_orders(10))
+        # self.orders.force_orders(number_of_orders=10)
+        print('DODANO 10 ZAMOWIEN')
+
 #sim = Simulation()
 #sim.init_environment(1)
 #sim.init_warehouse(100, 5)

@@ -17,8 +17,10 @@ class Orders:
 
     def force_orders(self, number_of_orders):
         yield self.warehouse.envi.timeout(0)
+        print("POCZATEK METODY FORCE_ORDERS\n")
         self.orders_queue.put(number_of_orders)
         self.warehouse.tasks.put(number_of_orders)
+        print('Dodano', number_of_orders, ' nowych zamowien\n')
         
     # generowanie losowej liczby całkowitej dla ilości zamówień
     def generate_order_number(self):

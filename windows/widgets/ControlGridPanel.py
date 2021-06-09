@@ -21,10 +21,10 @@ class ControlGridPanel(GridLayout):
         self.number_of_workers_text_input = NumberPanelTextInput(text='20')
         self.add_widget(self.number_of_workers_text_input)
 
-        # Wprowadzanie ilości wózków widłowych
-        self.add_widget(NumberPanelLabel(text='Ilość wózków widłowych: '))
-        self.number_of_forklifts_text_input = NumberPanelTextInput(text='5')
-        self.add_widget(self.number_of_forklifts_text_input)
+        # # Wprowadzanie ilości wózków widłowych
+        # self.add_widget(NumberPanelLabel(text='Ilość wózków widłowych: '))
+        # self.number_of_forklifts_text_input = NumberPanelTextInput(text='5')
+        # self.add_widget(self.number_of_forklifts_text_input)
 
         # Wprowadzanie powierzchni magazynowej
         self.add_widget(NumberPanelLabel(text='Powierzchnia magazynowa: '))
@@ -61,10 +61,22 @@ class ControlGridPanel(GridLayout):
         self.start_button.bind(on_press=lambda *args: self.start_callback(sim, sim_thread, *args))
         self.add_widget(self.start_button)
 
-        # Przycisk STOP
-        self.stop_button = Button(text='STOP', disabled=True, padding=(10, 10))
-        self.stop_button.bind(on_press=self.stop_callback)
-        self.add_widget(self.stop_button)
+        # # Przycisk STOP
+        # self.stop_button = Button(text='STOP', disabled=True, padding=(10, 10))
+        # self.stop_button.bind(on_press=self.stop_callback)
+        # self.add_widget(self.stop_button)
+
+        # Przycisk Dodawania zamówień
+        self.add_orders_button = Button(text='Dodaj 10 zamówień')
+        self.add_orders_button.bind(on_press=sim.add_orders)
+        self.add_orders_button.disabled = True
+        self.add_widget(self.add_orders_button)
+
+        # Przycisk dodawania dostaw
+        self.add_delivery_button = Button(text='Dodaj 10 dostaw')
+        self.add_delivery_button.bind()
+        self.add_delivery_button.disabled = True
+        self.add_widget(self.add_delivery_button)
 
     # Metoda startująca symulacje
     def start_callback(self, sim, sim_thread, *arg):
@@ -77,10 +89,12 @@ class ControlGridPanel(GridLayout):
 
         sim_thread.start()
         self.start_button.disabled = True
-        self.stop_button.disabled = False
+        # self.stop_button.disabled = False
+        self.add_orders_button.disabled = False
+        self.add_delivery_button.disabled = False
 
         self.number_of_workers_text_input.disabled = True
-        self.number_of_forklifts_text_input.disabled = True
+        # self.number_of_forklifts_text_input.disabled = True
         self.warehouse_space_text_input.disabled = True
         self.number_of_start_items_text_input.disabled = True
         self.number_of_daily_deliveries_text_input.disabled = True
