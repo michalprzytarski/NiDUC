@@ -12,7 +12,7 @@ import crash
 
 class Warehouse:
 
-    def __init__(self, capacity, start_items, environ):
+    def __init__(self, capacity, start_items, environ, end_time):
         self.capacity = capacity                                        # pojemność magazynu
         self.items_stored = simpy.Container(environ, init=start_items,
                                             capacity=self.capacity)     # pojemnik na składowane towary
@@ -27,6 +27,7 @@ class Warehouse:
         self.idle = True                                                # brak pracy
         self.empty = False                                              # czy magazyn jest pusty
         self.issues = issues.Issues()                                   # zgloszone problemy
+        self.end_time = end_time
 
     # losowanie czasu oczekiwania
     def generate_wait_period(self):

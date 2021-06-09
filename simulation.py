@@ -44,7 +44,7 @@ class Simulation:
         self.env_inited = True
 
     def init_warehouse(self, capacity, start_items):
-        self.war = warehouse.Warehouse(capacity, start_items, self.env)  # stworzenie obiektu magazynu
+        self.war = warehouse.Warehouse(capacity, start_items, self.env, 200)  # stworzenie obiektu magazynu
         self.war_inited = True
 
     def init_delivery(self, delivery_tempo, heap_time):
