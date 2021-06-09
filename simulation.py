@@ -114,10 +114,10 @@ class Simulation:
         print('DODAJ 10 DOSTAW')
         self.delivery.force_delivery(10)
 
-sim = Simulation()
-sim.init_environment(1)
-sim.init_warehouse(1000, 5)
-sim.init_orders(10,100)
-sim.init_delivery(10, 100)
-sim.run()
+#sim = Simulation()
+#sim.init_environment(1)
+#sim.init_warehouse(1000, 5)
+#sim.init_orders(10,100)
+#sim.init_delivery(10, 100)
+#sim.run()
 
