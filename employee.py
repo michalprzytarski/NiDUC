@@ -102,7 +102,7 @@ class Employee:
         if items_to_send > 1:
             yield self.warehouse.tasks.get(items_to_send - 1)
         yield self.warehouse.envi.timeout(3 + (
-                    0.3 * self.tiredness) ** 2 - 0.2 * self.experience)  # wyliczamy czas realizacji zamówienia i odczekujemy go
+                    0.2 * self.tiredness) ** 2 - 0.2 * self.experience)  # wyliczamy czas realizacji zamówienia i odczekujemy go
         yield self.warehouse.items_stored.get(items_to_send)  # pobieramy przedmiot z magazynu
         self.warehouse.orders_sent += items_to_send
         self.tiredness += 1
@@ -120,7 +120,7 @@ class Employee:
         if items_to_take > 1:
             yield self.warehouse.tasks.get(items_to_take - 1)
         yield self.warehouse.envi.timeout(
-            3 + (0.3 * self.tiredness) ** 2 - 0.2 * self.experience)  # wyliczamy czas przeniesienia dostawy
+            3 + (0.2 * self.tiredness) ** 2 - 0.2 * self.experience)  # wyliczamy czas przeniesienia dostawy
         yield self.warehouse.items_stored.put(
             items_to_take)  # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
         self.warehouse.items_received += items_to_take
