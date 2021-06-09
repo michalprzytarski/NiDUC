@@ -22,7 +22,7 @@ class DataWriter:
             csv_writer = csv.DictWriter(csv_file, fieldnames=self.fieldnames)
 
             info = {
-                "sim_time": self.sim_time,
+                "sim_time": (self.sim_time*2.4),
                 "occupation_value": self.occupation_value,
                 "current_working_value": self.current_working_value
             }

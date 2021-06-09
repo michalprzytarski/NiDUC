@@ -110,6 +110,11 @@ class Simulation:
         # self.orders.force_orders(number_of_orders=10)
         print('DODANO 10 ZAMOWIEN')
 
+    def get_time(self):
+        time = self.env.now
+        time *= 2.4
+        return time
+
 #sim = Simulation()
 #sim.init_environment(1)
 #sim.init_warehouse(100, 5)
