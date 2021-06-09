@@ -90,6 +90,16 @@ class Simulation:
     def get_is_break(self):
         return self.war.breaks.is_it_breaktime
 
+    def get_current_working(self):
+        current_working = 0
+        for employee in self.war.employees:
+            if not employee.waiting:
+                current_working += 1
+        return current_working / len(self.war.employees) * 100
+
+    def add_orders(self):
+        self.orders.force_orders(10)
+        
 #sim = Simulation()
 #sim.init_environment(1)
 #sim.init_warehouse(100, 5)
