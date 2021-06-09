@@ -16,7 +16,7 @@ class Crash:
 
     def generate_crash_time_duration(self):
         self.warehouse.envi.timeout(0)
-        return numpy.random.exponential(15)
+        return numpy.random.exponential(15)+2   #wart agrumentu  = beta = 1/lambda
 
     def run(self):
         while True:

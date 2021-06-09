@@ -15,6 +15,8 @@ class Delivery:
         self.priority = DELIVERY_PRIORITY
         self.heap_time=heap_time                                        # czas szczytu
 
+
+
     def force_delivery(self, delivery_size):
         # yield self.warehouse.envi.timeout(0)
         print("Wymuszono dostawę ", delivery_size," przedmiotów")

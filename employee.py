@@ -45,7 +45,7 @@ class Employee:
                 if self.orders.priority > self.delivery.priority or (
                         self.orders.orders_queue.level > 0 and
                         self.warehouse.items_stored.level > 0 and
-                        self.delivery.delivery_items_queue.level < 1):
+                        self.delivery.delivery_items_queue.level < 1) or self.warehouse.items_stored.level + (self.forklift.capacity if self.forklift else 1)+1 > self.warehouse.capacity:
                     if self.has_forklift_license:
                         items_to_send = min(self.warehouse.items_stored.level, self.forklift.capacity, self.orders.orders_queue.level)
                     else:
@@ -98,12 +98,15 @@ class Employee:
         else:
             fork_info = ""
 
-        print("Pracownik", self.employee_id, "realizuje", items_to_send, "zamówienie/a", fork_info)
-        if items_to_send > 1:
-            yield self.warehouse.tasks.get(items_to_send - 1)
-        yield self.warehouse.envi.timeout(3 + (
-                    0.3 * self.tiredness) ** 2 - 0.2 * self.experience)  # wyliczamy czas realizacji zamówienia i odczekujemy go
+        print("Pracownik", self.employee_id, "realizuje", items_to_send, "zamówienie/a", fork_info )
         yield self.warehouse.items_stored.get(items_to_send)  # pobieramy przedmiot z magazynu
+        print("Pracownik", self.employee_id, "pobrał przedmioty do wysłania")
+        if items_to_send > 1:
+            print("Pracownik", self.employee_id, "dokonuje wysyłki (1)")
+            yield self.warehouse.tasks.get(items_to_send - 1)
+        print("Pracownik", self.employee_id, "dokonuje wysyłki (2)")
+        yield self.warehouse.envi.timeout(3 + (
+                    0.2 * self.tiredness) - 0.2 * self.experience)  # wyliczamy czas realizacji zamówienia i odczekujemy go
         self.warehouse.orders_sent += items_to_send
         self.tiredness += 1
         self.tasks_completed += items_to_send
@@ -118,11 +121,14 @@ class Employee:
 
         print("Pracownik", self.employee_id, "przenosi", items_to_take, "przedmiot/y z dostawy", fork_info)
         if items_to_take > 1:
+            print("Pracownik", self.employee_id, "odbiera dostawe (etap 1)")
             yield self.warehouse.tasks.get(items_to_take - 1)
+        print("Pracownik", self.employee_id, "odbiera dostawe (etap 2)")
         yield self.warehouse.envi.timeout(
-            3 + (0.3 * self.tiredness) ** 2 - 0.2 * self.experience)  # wyliczamy czas przeniesienia dostawy
+            3 + (0.2 * self.tiredness) - 0.2 * self.experience)  # wyliczamy czas przeniesienia dostawy
+        print("Pracownik", self.employee_id, "odkłada dostawe na polke")
         yield self.warehouse.items_stored.put(
-            items_to_take)  # odkładamy przedmiot do magazynu tymczasowo po 1 przedmiocie
+            items_to_take)  # odkładamy przedmiot do magazynu
         self.warehouse.items_received += items_to_take
         self.tiredness += 1
         self.tasks_completed += items_to_take
