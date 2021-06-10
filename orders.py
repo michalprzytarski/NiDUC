@@ -24,7 +24,7 @@ class Orders:
     # generowanie losowej liczby całkowitej dla ilości zamówień
     def generate_order_number(self):
         while True:                                                             # imitacja petli do-while aby a != 0
-            a = fabs(self.heap_time-self.warehouse.envi.now)
+            a = int(fabs(self.heap_time-self.warehouse.envi.now))
             if a != 0:
                 break
 
