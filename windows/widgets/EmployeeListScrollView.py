@@ -5,6 +5,7 @@ from kivy.uix.scrollview import ScrollView
 
 kivy.require('2.0.0')  # replace with your current kivy version !
 
+
 # skrolowalna lista pracowników wraz z inforamacjami o nich
 class EmployeeListScrollView(ScrollView):
     def __init__(self, sim, **kwargs):

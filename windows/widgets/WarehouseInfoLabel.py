@@ -10,5 +10,4 @@ class WarehouseInfoLabel(Label):
         super(WarehouseInfoLabel, self).__init__(**kwargs)
 
         #  Dodanie styli do klasy
-        # self.text_size = (self.width, None)
         self.halign = 'right'

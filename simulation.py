@@ -36,6 +36,7 @@ class Simulation:
 
             self.env.run(until=200)  # rozpoczęcie symulacji do zadanego czasu
             print("ZAKONCZONO WATEK SYMULACJI!")
+
         else:
             print("Nie wszystkie elmenty symualcji zostały zainicjowane!")
 
@@ -118,6 +119,12 @@ class Simulation:
         time = self.env.now
         time *= 2.4
         return time
+
+    def get_warehouse_empty_number(self):
+        return self.war.issues.empty_war_count
+
+    def get_warehouse_idle_number(self):
+        return self.war.issues.idle_war_count
 
 #sim = Simulation()
 #sim.init_environment(1)

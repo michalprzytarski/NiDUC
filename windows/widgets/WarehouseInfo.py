@@ -2,7 +2,6 @@ import kivy
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 
-from windows.widgets.NumberPanelLabel import NumberPanelLabel
 from windows.widgets.WarehouseInfoLabel import WarehouseInfoLabel
 
 kivy.require('2.0.0')  # replace with your current kivy version !
@@ -60,4 +59,3 @@ class WarehouseInfoPanel(GridLayout):
 
         self.is_break_label.text = "%s" % "TAK" if sim.get_is_break() else "NIE"
         self.is_break_label.color = (1, 1, 0, 1) if sim.get_is_break() else (1, 1, 1, 1)
-

@@ -3,6 +3,7 @@ from kivy.uix.label import Label
 
 kivy.require('2.0.0')  # replace with your current kivy version !
 
+
 # klasa używana do stylizowania Label w panelu ControlGridPanel
 class NumberPanelLabel(Label):
     def __init__(self, **kwargs):
